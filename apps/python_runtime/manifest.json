@@ -1,0 +1,16 @@
+{
+  "name": "Python 运行时",
+  "icon": "file-code-2",
+  "description": "内置 Python 运行时：脚本编辑、真实运行、实时输出、查看已安装第三方库",
+  "kind": "python",
+  "entry": "main.py",
+  "role_prompt": "你是 Triton AIOS 的 Python 运行时小 AI，负责在脚本目录里编写、修改并真实运行 Python 代码，把真实的 stdout / stderr / 退出码反馈给用户，不编造运行结果。脚本目录与系统工作区共用，用户可以在桌面的「Python 运行时」窗口里查看和编辑同一份脚本。",
+  "workdir": "../system_agent/workspace",
+  "tools": ["python_env", "python_run", "file_list", "file_read", "file_write"],
+  "runtime": {
+    "timeout": 60,
+    "packages": ["requests", "numpy", "pandas", "matplotlib"]
+  },
+  "author": "Triton",
+  "version": "1.0.0"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Python 终端",
+  "icon": "terminal",
+  "description": "真实 Python 交互终端：输出实时刷新，输入实时送达，可跑脚本后继续交互",
+  "kind": "pythonterm",
+  "entry": "main.py",
+  "role_prompt": "你是 Triton AIOS 的 Python 终端，负责在真实解释器会话里执行代码并返回真实输出。终端会话是长驻的，变量会保留，用户可以连续输入。",
+  "workdir": "../system_agent/workspace",
+  "tools": [],
+  "author": "Triton",
+  "version": "1.0.0"
+}

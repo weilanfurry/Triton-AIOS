@@ -1,0 +1,584 @@
+/* ============================================================
+   VeliUI · Triton AIOS 视觉层
+   依据《VeliUI 设计系统规范 V1.0》：
+   轻盈通透 / 层级分明 / 克制优雅 / 数据优先
+   ============================================================ */
+
+#triton-desktop{
+  /* 品牌：低饱和薄荷青，带一点“水感” */
+  --brand: light-dark(#2f9d8b, #58b7a6);
+  --brand-ink: light-dark(#1d7566, #8fd7c9);
+  --brand-soft: light-dark(rgba(47,157,139,.10), rgba(88,183,166,.16));
+  --brand-glow: light-dark(rgba(47,157,139,.30), rgba(88,183,166,.22));
+
+  /* 中性色：壁纸底色改为深绿系（浅色主题＝清透薄荷绿，深色主题＝有纵深的深绿） */
+  --bg0: light-dark(#f0f8f3, #04170f);
+  --bg1: light-dark(#c8e7d6, #0f553a);
+  --surface: light-dark(#ffffff, #1a2226);
+  --surface-2: light-dark(#f4f8f9, #202a2e);
+  --surface-3: light-dark(#e9f0f1, #273237);
+  --text: light-dark(#1b2a2e, #e7eef0);
+  --text-2: light-dark(#6d7d82, #93a3a7);
+  --border: light-dark(rgba(24,48,53,.09), rgba(255,255,255,.09));
+  --border-soft: light-dark(rgba(24,48,53,.05), rgba(255,255,255,.06));
+
+  /* 兼容旧变量名 */
+  --accent: var(--brand);
+  --accent-soft: var(--brand-soft);
+  --green: light-dark(#2f9d8b, #58b7a6);
+  --green-soft: light-dark(rgba(47,157,139,.12), rgba(88,183,166,.18));
+  --red: light-dark(#c4695e, #e08980);
+  --amber: light-dark(#bf9147, #d9b26a);
+
+  /* 玻璃与阴影：阴影带主色，不用脏灰 */
+  --glass: light-dark(rgba(255,255,255,.66), rgba(22,30,34,.62));
+  --glass-strong: light-dark(rgba(255,255,255,.86), rgba(24,32,36,.86));
+  --shadow: 0 34px 80px -40px var(--brand-glow), 0 10px 30px -18px rgba(20,40,45,.16);
+  --shadow-soft: 0 14px 34px -20px var(--brand-glow), 0 3px 10px -4px rgba(20,40,45,.08);
+  --shadow-dock: 0 30px 64px -26px var(--brand-glow), 0 10px 24px -14px rgba(20,40,45,.14);
+  --glow-blue: light-dark(rgba(140,220,190,.34), rgba(74,205,155,.22));
+  --glow-green: light-dark(rgba(170,226,200,.30), rgba(24,126,92,.34));
+  --dock-reserve: 0px;
+
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,"Helvetica Neue",Arial,sans-serif;
+  /* 壁纸：有纵深的深绿渐变（左上偏暗、右下偏亮，中间夹一层过渡，再叠两团柔光） */
+  background:
+    radial-gradient(880px 500px at 84% -12%, var(--glow-blue), transparent 62%),
+    radial-gradient(760px 460px at 2% 114%, var(--glow-green), transparent 60%),
+    radial-gradient(620px 420px at 46% 42%, light-dark(rgba(255,255,255,.34), rgba(36,132,96,.20)), transparent 72%),
+    linear-gradient(155deg,
+      light-dark(#f0f8f3, #04170f) 0%,
+      light-dark(#dcede4, #082719) 30%,
+      light-dark(#c8e7d6, #0a3b26) 62%,
+      light-dark(#b2ddc4, #0f553a) 100%);
+}
+
+/* ---------- 通用：按压反馈 / 动效 ---------- */
+#triton-desktop button,
+#triton-desktop .sb-item,
+#triton-desktop .chip,
+#triton-desktop .sp-item{
+  transition: transform .14s cubic-bezier(.2,.8,.3,1), background .16s, box-shadow .2s, color .16s, border-color .16s;
+}
+#triton-desktop button:active,
+#triton-desktop .sb-item:active,
+#triton-desktop .sp-item:active{ transform:scale(.975); }
+
+@keyframes veli-rise{
+  from{ opacity:0; transform:translateY(10px) scale(.99); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+/* ---------- 顶栏 ---------- */
+#triton-desktop .topbar{ inset:14px 18px auto; }
+#triton-desktop .tb-left{ gap:9px; }
+#triton-desktop .icon-btn{
+  width:38px;height:38px;border-radius:999px;
+  background:var(--glass);border:1px solid light-dark(rgba(255,255,255,.7),rgba(255,255,255,.06));
+  box-shadow:var(--shadow-soft);backdrop-filter:blur(18px) saturate(1.1);
+}
+#triton-desktop .icon-btn:hover{ background:var(--surface); transform:translateY(-1px); }
+#triton-desktop .icon-btn[aria-pressed="true"]{
+  background:var(--brand-soft);color:var(--brand-ink);box-shadow:0 0 0 1px var(--brand-soft),var(--shadow-soft);
+}
+#triton-desktop .status{
+  gap:11px;padding:8px 15px;border-radius:999px;font-size:12px;font-weight:600;
+  background:var(--glass);border:1px solid light-dark(rgba(255,255,255,.7),rgba(255,255,255,.06));
+  box-shadow:var(--shadow-soft);backdrop-filter:blur(18px) saturate(1.1);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;
+}
+
+/* ---------- 侧栏：悬浮卡片 ---------- */
+#triton-desktop .sb-backdrop{
+  background:light-dark(rgba(30,50,55,.10),rgba(4,8,10,.44));
+  backdrop-filter:blur(2px);
+}
+#triton-desktop .sidebar{
+  left:18px;top:18px;bottom:104px;width:300px;border-radius:28px;
+  background:var(--glass-strong);
+  border:1px solid light-dark(rgba(255,255,255,.8),rgba(255,255,255,.06));
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(30px) saturate(1.15);
+  transform:translateX(-120%) scale(.98);
+  transition:transform .34s cubic-bezier(.22,.9,.28,1), opacity .24s;
+  opacity:0;
+}
+#triton-desktop .sidebar.open{ transform:translateX(0) scale(1); opacity:1; }
+#triton-desktop .sb-head{ padding:20px 18px 12px; align-items:flex-end; }
+#triton-desktop .sb-title{
+  font-size:20px;font-weight:700;letter-spacing:-.01em;
+}
+#triton-desktop .sb-title::after{
+  content:"CONVERSATIONS";display:block;font-size:9.5px;font-weight:500;
+  letter-spacing:.18em;color:var(--text-2);margin-top:3px;
+}
+#triton-desktop .sb-new{
+  padding:8px 14px;border-radius:999px;background:var(--brand);color:#fff;
+  font-size:12px;font-weight:600;letter-spacing:.01em;
+  box-shadow:0 12px 24px -12px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,.35);
+}
+#triton-desktop .sb-new:hover{ filter:brightness(1.05); transform:translateY(-1px); }
+#triton-desktop .sb-list{ padding:6px 10px 12px; display:flex; flex-direction:column; gap:4px; }
+#triton-desktop .sb-item{
+  padding:10px 40px 10px 10px;border-radius:16px;border:1px solid transparent;gap:11px;
+}
+#triton-desktop .sb-item:hover{ background:var(--surface-2); }
+#triton-desktop .sb-item.active{
+  background:var(--brand-soft);
+  border-color:light-dark(rgba(47,157,139,.10),rgba(88,183,166,.16));
+}
+#triton-desktop .sb-ic{
+  width:36px;height:36px;border-radius:12px;background:var(--surface-3);color:var(--text-2);
+  transition:background .16s,color .16s;
+}
+#triton-desktop .sb-item.active .sb-ic{ background:var(--brand);color:#fff;box-shadow:0 8px 16px -10px var(--brand-glow); }
+#triton-desktop .sb-ic svg{ width:16px;height:16px; }
+#triton-desktop .sb-name{ font-size:13px;font-weight:500; }
+#triton-desktop .sb-item.active .sb-name{ color:var(--brand-ink);font-weight:600; }
+#triton-desktop .sb-time{ margin-top:1px;font-size:10.5px;letter-spacing:.01em; }
+#triton-desktop .sb-skill-tag{
+  background:light-dark(rgba(255,255,255,.6),rgba(255,255,255,.06));
+  color:var(--brand-ink);margin-left:6px;
+}
+#triton-desktop .sb-del,#triton-desktop .sb-ren{ border-radius:10px; }
+#triton-desktop .sb-item:hover .sb-del,#triton-desktop .sb-item:hover .sb-ren{ background:transparent; }
+#triton-desktop .sb-rename-input{
+  border-radius:10px;border:1px solid var(--brand);background:var(--surface);padding:4px 8px;
+}
+#triton-desktop .sb-foot{
+  border-top:1px solid var(--border-soft);padding:12px 18px;font-size:11px;letter-spacing:.01em;
+}
+
+/* ---------- AI 对话窗口 ---------- */
+#triton-desktop .chat{
+  left:50%;top:56px;bottom:108px;transform:translateX(-50%);
+  width:min(880px,calc(100% - 56px));
+  border-radius:32px;
+  background:var(--glass-strong);
+  border:1px solid light-dark(rgba(255,255,255,.9),rgba(255,255,255,.06));
+  box-shadow:
+    inset 0 1px 0 light-dark(rgba(255,255,255,.95),rgba(255,255,255,.05)),
+    var(--shadow);
+  backdrop-filter:blur(28px) saturate(1.12);
+}
+#triton-desktop .chat.floating{
+  transform:none;left:auto;right:auto;bottom:auto;width:auto;
+}
+#triton-desktop .chat.dragging{
+  box-shadow:0 0 0 2px var(--brand-soft), 0 40px 90px -40px var(--brand-glow);
+}
+#triton-desktop .chat-head{
+  padding:16px 22px;border-bottom:1px solid var(--border-soft);gap:12px;
+}
+#triton-desktop .chat-dot{
+  width:9px;height:9px;background:var(--brand);
+  box-shadow:0 0 0 4px var(--brand-soft), 0 0 20px var(--brand-glow);
+}
+#triton-desktop .chat-title{ font-size:15px;font-weight:650;letter-spacing:-.01em; }
+#triton-desktop .chat-sub{
+  font-size:9.5px;font-weight:500;letter-spacing:.08em;margin-top:2px;
+}
+#triton-desktop .agent-badge{
+  padding:5px 11px;border-radius:999px;font-size:11px;font-weight:600;
+  background:var(--brand-soft);color:var(--brand-ink);box-shadow:inset 0 0 0 1px var(--brand-soft);
+}
+#triton-desktop .chat-body{ background:transparent; }
+#triton-desktop .msgs{ padding:22px 24px;gap:16px; }
+
+/* 欢迎页：数据锚点式大标题 */
+#triton-desktop .hero{ padding:22px 20px 20px; gap:0; }
+#triton-desktop .hero-logo{
+  width:64px;height:64px;flex:none;border-radius:20px;
+  background:linear-gradient(145deg, light-dark(#ffffff,#243035), light-dark(#eef6f4,#1b2428));
+  color:var(--brand);
+  box-shadow:
+    0 20px 38px -22px var(--brand-glow),
+    0 6px 16px -10px rgba(20,40,45,.10),
+    inset 0 1px 0 light-dark(#fff,rgba(255,255,255,.08));
+  margin-bottom:16px;
+}
+#triton-desktop .hero-logo svg{ width:27px;height:27px; }
+#triton-desktop .hero h2{
+  font-size:31px;font-weight:750;letter-spacing:-.035em;line-height:1.15;margin:0 0 8px;flex:none;
+}
+#triton-desktop .hero p{
+  max-width:440px;margin:0 auto 20px;font-size:13px;line-height:1.7;color:var(--text-2);flex:none;
+}
+#triton-desktop .chips{ gap:9px; flex:none; }
+#triton-desktop .chip{
+  padding:9px 15px;border-radius:999px;font-size:12px;
+  background:var(--surface);border:1px solid var(--border-soft);
+  box-shadow:0 10px 24px -18px rgba(20,40,45,.35);
+}
+#triton-desktop .chip:hover{
+  border-color:transparent;background:var(--brand-soft);color:var(--brand-ink);
+  box-shadow:0 14px 28px -18px var(--brand-glow);transform:translateY(-1px);
+}
+
+/* 气泡 */
+#triton-desktop .msg{ gap:10px; }
+#triton-desktop .avatar{
+  width:30px;height:30px;border-radius:11px;font-size:11px;font-weight:600;
+}
+#triton-desktop .msg.user .avatar{
+  background:var(--brand-soft);color:var(--brand-ink);box-shadow:inset 0 0 0 1px var(--brand-soft);
+}
+#triton-desktop .msg.ai .avatar,#triton-desktop .msg.agent .avatar{
+  background:var(--surface);color:var(--brand);
+  box-shadow:0 10px 22px -16px rgba(20,40,45,.4), inset 0 0 0 1px var(--border-soft);
+}
+#triton-desktop .bubble{
+  padding:11px 16px;border-radius:20px;font-size:13px;line-height:1.65;
+  background:var(--surface);border:1px solid var(--border-soft);
+  box-shadow:0 16px 36px -30px rgba(20,40,45,.45);
+}
+#triton-desktop .msg.ai .bubble{ border-bottom-left-radius:7px; }
+#triton-desktop .msg.user .bubble{
+  background:var(--brand-soft);color:var(--text);
+  border:1px solid light-dark(rgba(47,157,139,.08),rgba(88,183,166,.14));
+  border-bottom-right-radius:7px;box-shadow:none;
+}
+#triton-desktop .msg.agent .bubble{
+  background:var(--brand-soft);border:1px solid light-dark(rgba(47,157,139,.10),rgba(88,183,166,.16));
+}
+#triton-desktop .bubble.md code{ background:var(--surface-2);border-radius:7px; }
+#triton-desktop .bubble.md pre{
+  background:var(--surface-2);border:1px solid var(--border-soft);border-radius:14px;padding:10px 12px;
+}
+#triton-desktop .bubble.md a{ color:var(--brand-ink);text-underline-offset:2px; }
+#triton-desktop .bubble.md blockquote{ border-left:2px solid var(--brand-soft);color:var(--text-2); }
+#triton-desktop .bubble.md th,#triton-desktop .bubble.md td{ border-color:var(--border-soft); }
+#triton-desktop .msg-skill{ background:var(--brand-soft);color:var(--brand-ink); }
+#triton-desktop .steps-box{ color:var(--text-2); }
+#triton-desktop .bubble-att{
+  background:var(--surface-2);border:1px solid var(--border-soft);border-radius:12px;
+}
+#triton-desktop .msg.user .bubble-att{
+  background:light-dark(rgba(255,255,255,.55),rgba(255,255,255,.06));
+  border-color:transparent;color:var(--text);
+}
+#triton-desktop .msg.user .bubble-att svg{ color:var(--text-2); }
+
+/* 输入区 */
+#triton-desktop .input-dock{
+  padding:10px 16px 16px;border-top:1px solid var(--border-soft);gap:9px;
+}
+#triton-desktop .pill{
+  gap:6px;padding:7px 8px 7px 10px;border-radius:999px;
+  background:var(--surface);border:1px solid light-dark(rgba(255,255,255,.9),rgba(255,255,255,.06));
+  box-shadow:
+    0 18px 40px -26px rgba(20,40,45,.35),
+    inset 0 1px 0 light-dark(rgba(255,255,255,.9),rgba(255,255,255,.04));
+}
+#triton-desktop .pill:focus-within{
+  border-color:light-dark(rgba(47,157,139,.28),rgba(88,183,166,.35));
+  box-shadow:0 0 0 4px var(--brand-soft), 0 18px 40px -26px rgba(20,40,45,.3);
+}
+#triton-desktop .pill input{ font-size:13.5px;letter-spacing:.005em; }
+#triton-desktop .agent-toggle{
+  padding:6px 12px;border-radius:999px;border:1px solid var(--border-soft);
+  background:var(--surface-2);font-size:11.5px;font-weight:600;
+}
+#triton-desktop .agent-toggle[aria-pressed="true"]{
+  background:var(--brand-soft);color:var(--brand-ink);border-color:transparent;
+  box-shadow:inset 0 0 0 1px var(--brand-soft);
+}
+#triton-desktop .pill-act{ width:32px;height:32px;border-radius:11px; }
+#triton-desktop .pill-act:hover{ background:var(--brand-soft);color:var(--brand-ink); }
+#triton-desktop .send{
+  width:38px;height:38px;border-radius:999px;
+  background:var(--brand);color:#fff;
+  box-shadow:0 12px 26px -12px var(--brand-glow), 0 4px 12px -6px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,.35);
+}
+#triton-desktop .send:hover{ filter:brightness(1.06); transform:translateY(-1px); }
+#triton-desktop .send svg{ width:17px;height:17px; }
+#triton-desktop .skill-strip .skill-chip{
+  background:var(--brand-soft);border-color:transparent;color:var(--brand-ink);
+  box-shadow:inset 0 0 0 1px var(--brand-soft);
+}
+#triton-desktop .skill-strip .skill-chip .sc-x{ color:var(--brand-ink); }
+#triton-desktop .attach-chip{
+  background:var(--surface);border:1px solid var(--border-soft);border-radius:14px;
+  box-shadow:0 10px 22px -20px rgba(20,40,45,.4);
+}
+#triton-desktop .attach-thumb,#triton-desktop .attach-ic{ border-radius:10px; }
+
+/* 技能弹窗 */
+#triton-desktop .skill-pop{
+  border-radius:24px;background:var(--glass-strong);
+  border:1px solid light-dark(rgba(255,255,255,.85),rgba(255,255,255,.07));
+  box-shadow:var(--shadow);backdrop-filter:blur(26px) saturate(1.1);
+}
+#triton-desktop .sp-head{ padding:14px 16px 8px;font-size:10px;letter-spacing:.16em;text-transform:uppercase; }
+#triton-desktop .sp-list{ padding:4px 8px 10px; }
+#triton-desktop .sp-item{ padding:10px 11px;border-radius:16px;gap:11px; }
+#triton-desktop .sp-item:hover{ background:var(--surface-2); }
+#triton-desktop .sp-item.active{
+  background:var(--brand-soft);
+  box-shadow:inset 0 0 0 1px light-dark(rgba(47,157,139,.10),rgba(88,183,166,.16));
+}
+#triton-desktop .sp-ic{ width:34px;height:34px;border-radius:12px;background:var(--surface-3); }
+#triton-desktop .sp-item.active .sp-ic{ background:var(--brand); }
+#triton-desktop .sp-name{ font-size:13px;font-weight:600; }
+#triton-desktop .sp-desc{ font-size:11px;margin-top:1px; }
+#triton-desktop .sp-foot{ padding:8px; }
+#triton-desktop .sp-upload{ border-radius:14px;font-size:11.5px; }
+
+/* 工作目录面板 */
+#triton-desktop .agent-panel{
+  background:var(--surface-2);border-left:1px solid var(--border-soft);
+}
+#triton-desktop .ap-head{ font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2); }
+#triton-desktop .tree-item{ border-radius:9px; }
+#triton-desktop .tree-item:hover{ background:var(--surface-3); }
+
+/* ---------- 任务栏：底部悬浮胶囊 ---------- */
+#triton-desktop .dock{
+  right:auto;left:50%;top:auto;bottom:18px;transform:translateX(-50%);
+  flex-direction:row;gap:5px;padding:9px 13px;border-radius:999px;
+  background:var(--glass-strong);
+  border:1px solid light-dark(rgba(255,255,255,.85),rgba(255,255,255,.07));
+  box-shadow:var(--shadow-dock);
+  backdrop-filter:blur(26px) saturate(1.15);
+  max-height:none;
+}
+#triton-desktop .dock-item{
+  width:42px;height:42px;border-radius:14px;transform-origin:center bottom;
+}
+#triton-desktop .d-ic{
+  width:32px;height:32px;border-radius:11px;
+  box-shadow:0 8px 16px -8px rgba(23,46,50,.45), inset 0 1px 0 rgba(255,255,255,.35);
+}
+#triton-desktop .dot{
+  left:50%;top:auto;bottom:1px;transform:translateX(-50%);width:5px;height:5px;
+  box-shadow:0 0 0 2px var(--glass-strong);
+}
+#triton-desktop .sep{ width:1px;height:24px;align-self:center;margin:0 6px;background:var(--border); }
+
+/* 柔和化的应用图标色 */
+#triton-desktop .ic-grid{ background:linear-gradient(140deg,#c6d0d9,#a2afb9); }
+#triton-desktop .ic-blue{ background:linear-gradient(140deg,#96b7db,#7098c2); }
+#triton-desktop .ic-pink{ background:linear-gradient(140deg,#e8bccb,#d59db1); }
+#triton-desktop .ic-purple{ background:linear-gradient(140deg,#c6bbe6,#a99bd0); }
+#triton-desktop .ic-gray{ background:linear-gradient(140deg,#cdd5dc,#b0bac3); }
+#triton-desktop .ic-trash{ background:linear-gradient(140deg,#d3dae0,#b9c2ca); }
+#triton-desktop .ic-green{ background:linear-gradient(140deg,#add9c6,#8bc3ac); }
+#triton-desktop .ic-py{ background:linear-gradient(140deg,#ddcfa6,#9fb8cf); }
+#triton-desktop .ic-term{ background:linear-gradient(140deg,#94a1ab,#707d87); }
+
+/* ---------- 启动台：数据锚点 ---------- */
+#triton-desktop .launchpad{
+  background:light-dark(rgba(240,246,247,.72),rgba(12,18,21,.82));
+  backdrop-filter:blur(34px) saturate(1.15);
+  gap:6px;
+}
+#triton-desktop .lp-hero{ text-align:center; margin-bottom:26px; }
+#triton-desktop .lp-title{
+  color:var(--text-2);font-size:9.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:8px;text-shadow:none;
+}
+#triton-desktop .lp-title span{ display:inline-block;margin-left:8px;opacity:.6; }
+#triton-desktop .lp-clock{
+  font-size:76px;font-weight:250;letter-spacing:-.05em;line-height:1;
+  color:var(--text);font-variant-numeric:tabular-nums;
+  text-shadow:0 24px 60px light-dark(rgba(47,157,139,.16),rgba(0,0,0,.4));
+}
+#triton-desktop .lp-date{
+  margin-top:10px;font-size:12px;color:var(--text-2);letter-spacing:.06em;
+}
+#triton-desktop .lp-grid{
+  display:grid;grid-template-columns:repeat(5,96px);gap:20px;
+  padding:18px;border-radius:32px;
+  background:light-dark(rgba(255,255,255,.42),rgba(22,30,34,.36));
+  border:1px solid light-dark(rgba(255,255,255,.6),rgba(255,255,255,.05));
+  box-shadow:0 40px 90px -50px rgba(20,40,45,.4);
+  backdrop-filter:blur(18px);
+}
+#triton-desktop .lp-app{ width:96px;gap:9px;color:var(--text); }
+#triton-desktop .lp-ic{
+  width:58px;height:58px;border-radius:19px;
+  box-shadow:0 16px 30px -16px rgba(23,46,50,.45), inset 0 1px 0 rgba(255,255,255,.4);
+  transition:transform .16s, box-shadow .2s;
+}
+#triton-desktop .lp-app:hover .lp-ic{
+  transform:translateY(-3px) scale(1.04);
+  box-shadow:0 22px 38px -16px rgba(23,46,50,.5), inset 0 1px 0 rgba(255,255,255,.45);
+}
+#triton-desktop .lp-name{ font-size:11.5px;color:var(--text);text-shadow:none;font-weight:500; }
+#triton-desktop .lp-name em{ color:var(--text-2);font-size:9.5px; }
+#triton-desktop .ic-soon{ background:linear-gradient(140deg,#d3dade,#b8c1c7); }
+
+/* ---------- 应用窗口 ---------- */
+#triton-desktop .win{
+  border-radius:26px;background:var(--surface);
+  border:1px solid light-dark(rgba(255,255,255,.9),rgba(255,255,255,.06));
+  box-shadow:var(--shadow);
+  animation:veli-rise .22s cubic-bezier(.22,.9,.28,1);
+}
+#triton-desktop .win.focused{
+  box-shadow:0 40px 90px -42px var(--brand-glow), 0 12px 30px -18px rgba(20,40,45,.22);
+}
+#triton-desktop .win-bar{
+  padding:11px 14px;background:var(--surface-2);border-bottom:1px solid var(--border-soft);
+}
+#triton-desktop .wb-title{ font-size:13px;font-weight:650;letter-spacing:-.005em; }
+#triton-desktop .wb-ic{ color:var(--brand); }
+#triton-desktop .wb-ctl{ gap:7px; }
+#triton-desktop .wb-ctl button{ width:11px;height:11px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06); }
+#triton-desktop .wb-min{ background:light-dark(#e6c47e,#c9a95e); }
+#triton-desktop .wb-close{ background:light-dark(#e29088,#cf7a71); }
+#triton-desktop .win-body{ padding:14px; }
+#triton-desktop .win.set-win{ width:min(440px,calc(100% - 24px));height:min(548px,calc(100% - 116px)) }
+
+/* ---------- 通用控件 ---------- */
+#triton-desktop .mini-btn{
+  border-radius:999px;padding:6px 13px;font-size:12px;
+  background:var(--surface-2);border:1px solid var(--border-soft);color:var(--text);
+}
+#triton-desktop .mini-btn:hover{ background:var(--surface-3); }
+#triton-desktop .mini-btn.primary{
+  background:var(--brand);border-color:transparent;color:#fff;
+  box-shadow:0 10px 20px -12px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,.3);
+}
+#triton-desktop .mini-btn.primary:hover{ filter:brightness(1.05); }
+#triton-desktop input[type="text"],#triton-desktop input[type="password"],#triton-desktop textarea{
+  border-radius:14px;
+}
+#triton-desktop .fm-bar .fm-name-input,
+#triton-desktop .fb-ops input,
+#triton-desktop .qc-search input,
+#triton-desktop .qc-server-row input,
+#triton-desktop .set-field input{
+  border-radius:999px;border:1px solid var(--border-soft);background:var(--surface-2);
+}
+#triton-desktop .fm-row{ border-radius:11px; }
+#triton-desktop .fm-row.sel{ background:var(--brand-soft);color:var(--brand-ink); }
+#triton-desktop .fm-head{ border-bottom-color:var(--border-soft); }
+#triton-desktop .fm-editor textarea,#triton-desktop .fb-view textarea,
+#triton-desktop .py-editor,#triton-desktop .py-console,#triton-desktop .fm-out,#triton-desktop .fb-out{
+  border-radius:16px;border-color:var(--border-soft);
+}
+#triton-desktop .fm-menu{
+  border-radius:16px;background:var(--glass-strong);border-color:var(--border-soft);
+  box-shadow:var(--shadow-soft);backdrop-filter:blur(22px);
+}
+#triton-desktop .fm-menu button{ border-radius:10px; }
+
+/* 音乐 */
+#triton-desktop .m-item{ border-radius:12px;padding:9px 10px; }
+#triton-desktop .m-item.playing{ background:var(--brand-soft);color:var(--brand-ink); }
+#triton-desktop .m-ic{ border-radius:11px;background:linear-gradient(140deg,#e8bccb,#d59db1); }
+#triton-desktop .music-player{ background:var(--surface-2);border-top:1px solid var(--border-soft);padding:12px 16px 14px; }
+#triton-desktop .mp-prog{ height:5px;background:var(--surface-3); }
+#triton-desktop .mp-bar{ background:linear-gradient(90deg,var(--brand),light-dark(#7cc9bb,#7cc9bb)); }
+#triton-desktop .mp-info b{ font-weight:650;font-size:12.5px; }
+
+/* QomoChat */
+#triton-desktop .qc-msg{ border-radius:16px;padding:8px 12px; }
+#triton-desktop .qc-msg.mine{ background:var(--brand-soft);color:var(--text); }
+#triton-desktop .qc-msg .qc-file-link{ color:var(--brand-ink); }
+#triton-desktop .qc-msg.mine .qc-file-link{ color:var(--brand-ink); }
+#triton-desktop .qc-friend{ border-radius:12px; }
+#triton-desktop .qc-friend:hover,#triton-desktop .qc-friend.active{ background:var(--brand-soft); }
+#triton-desktop .qc-send input{ border-radius:999px; }
+
+/* Python / 终端 */
+#triton-desktop .py-tab{ border-radius:999px;padding:6px 8px; }
+#triton-desktop .py-tab.active{
+  background:var(--brand-soft);color:var(--brand-ink);border-color:transparent;
+}
+#triton-desktop .py-node{ border-radius:9px; }
+#triton-desktop .py-node.file.sel{ background:var(--brand-soft);color:var(--brand-ink); }
+#triton-desktop .py-console{ background:var(--surface-2); }
+#triton-desktop .py-state{ border-radius:999px; }
+
+/* 设置 / 系统控制 */
+#triton-desktop .about-card{
+  position:relative;overflow:hidden;margin:0 0 14px;padding:17px 16px 14px;border-radius:22px;
+  background:
+    radial-gradient(220px 120px at 100% 0%, var(--brand-soft), transparent 70%),
+    linear-gradient(150deg, light-dark(#ffffff,#202a2e), light-dark(#f2f8f6,#1a2226));
+  box-shadow:
+    inset 0 1px 0 light-dark(rgba(255,255,255,.95),rgba(255,255,255,.06)),
+    0 20px 46px -34px var(--brand-glow);
+}
+#triton-desktop .about-head{display:flex;align-items:center;gap:12px}
+#triton-desktop .about-logo{
+  width:46px;height:46px;flex:none;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  color:#fff;background:linear-gradient(150deg, light-dark(#46b3a0,#64c4b3), light-dark(#2f9484,#3f9e8d));
+  box-shadow:0 14px 26px -14px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,.4);
+}
+#triton-desktop .about-logo svg{width:22px;height:22px}
+#triton-desktop .about-meta{min-width:0}
+#triton-desktop .about-name{
+  display:flex;align-items:center;gap:8px;font-size:18px;font-weight:750;letter-spacing:-.025em;line-height:1.2;
+}
+#triton-desktop .about-badge{
+  font-size:8px;font-weight:700;letter-spacing:.12em;color:var(--brand-ink);
+  background:var(--brand-soft);border-radius:999px;padding:2px 7px;
+}
+#triton-desktop .about-version{font-size:10px;color:var(--text-2);letter-spacing:.05em;margin-top:3px}
+#triton-desktop .about-desc{font-size:11.5px;line-height:1.65;color:var(--text-2);margin:12px 0 10px}
+#triton-desktop .about-tags{display:flex;flex-wrap:wrap;gap:6px}
+#triton-desktop .about-tags span{
+  font-size:9.5px;color:var(--text-2);background:light-dark(rgba(255,255,255,.7),rgba(255,255,255,.05));
+  border:1px solid var(--border-soft);border-radius:999px;padding:3px 8px;
+}
+#triton-desktop .about-foot{
+  margin-top:12px;padding-top:10px;border-top:1px solid var(--border-soft);
+  font-size:9px;letter-spacing:.04em;color:var(--text-2);opacity:.85;
+}
+#triton-desktop .set-row{ border-bottom:1px solid var(--border-soft);padding:11px 2px; }
+#triton-desktop .set-opts label{ border-radius:999px; }
+#triton-desktop .set-opts label:has(input:checked){
+  background:var(--brand-soft);color:var(--brand-ink);border-color:transparent;
+}
+#triton-desktop .sc-elem{ border-radius:12px;background:var(--surface-2);border-color:transparent; }
+#triton-desktop button.sc-elem.sel{ background:var(--brand-soft);border-color:transparent;color:var(--brand-ink); }
+
+/* 提示条 */
+#triton-desktop .toast{
+  bottom:100px;border-radius:999px;padding:10px 18px;font-size:12px;
+  background:var(--glass-strong);border:1px solid light-dark(rgba(255,255,255,.8),rgba(255,255,255,.07));
+  box-shadow:var(--shadow-soft);backdrop-filter:blur(22px);
+}
+
+/* ---------- 小屏适配 ---------- */
+@media (max-width:900px){
+  #triton-desktop .chat{ width:calc(100% - 32px); }
+  #triton-desktop .lp-grid{ grid-template-columns:repeat(4,88px);gap:16px;padding:16px; }
+  #triton-desktop .lp-app{ width:88px; }
+}
+@media (max-width:640px){
+  #triton-desktop .chat{ top:52px;bottom:96px;width:calc(100% - 20px);border-radius:24px; }
+  #triton-desktop .chat-head{ padding:13px 16px; }
+  #triton-desktop .msgs{ padding:16px; }
+  #triton-desktop .hero h2{ font-size:27px; }
+  #triton-desktop .sidebar{ width:min(300px,calc(100% - 24px)); left:12px;top:12px;bottom:96px; }
+  #triton-desktop .dock{ padding:7px 9px;gap:2px; }
+  #triton-desktop .dock-item{ width:36px;height:36px; }
+  #triton-desktop .d-ic{ width:28px;height:28px;border-radius:9px; }
+  #triton-desktop .lp-clock{ font-size:54px; }
+  #triton-desktop .lp-grid{ grid-template-columns:repeat(3,84px);gap:14px; }
+  #triton-desktop .lp-app{ width:84px; }
+  #triton-desktop .lp-ic{ width:50px;height:50px;border-radius:16px; }
+  #triton-desktop .toast{ bottom:88px; }
+}
+@media (max-width:420px){
+  #triton-desktop .agent-label{ display:none; }
+  #triton-desktop .dock-item{ width:32px;height:32px; }
+  #triton-desktop .d-ic{ width:25px;height:25px;border-radius:8px; }
+  #triton-desktop .d-ic svg{ width:14px;height:14px; }
+  #triton-desktop .lp-grid{ grid-template-columns:repeat(2,84px); }
+}
+
+/* 深色：阴影减弱，改为细微的边框光 */
+#triton-desktop[data-theme="dark"] .win,
+#triton-desktop[data-theme="dark"] .chat,
+#triton-desktop[data-theme="dark"] .sidebar{
+  box-shadow:0 30px 70px -40px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.05);
+}
+
+@media (prefers-reduced-motion:reduce){
+  #triton-desktop .win{ animation:none; }
+}

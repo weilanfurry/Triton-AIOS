@@ -1,0 +1,12 @@
+{
+  "name": "文件",
+  "icon": "folder",
+  "description": "在工作区文件夹中读取、创建、修改文件",
+  "kind": "workspace",
+  "entry": "main.py",
+  "role_prompt": "你是系统工作区小 AI，负责在工作区文件夹中读取、创建、修改文件。",
+  "workdir": "workspace",
+  "tools": ["file_list", "file_read", "file_write"],
+  "author": "Triton",
+  "version": "0.2.0"
+}

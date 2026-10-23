@@ -1,0 +1,19 @@
+{
+  "deepseek_api_key": "",
+  "llm_base_url": "https://api.deepseek.com",
+  "llm_model": "deepseek-chat",
+  "llm_vision": true,
+  "skill": {
+    "auto_match": true
+  },
+  "search": {
+    "provider": "auto",
+    "api_key": "",
+    "timeout": 18,
+    "cache_seconds": 600
+  },
+  "qomochat_base_url": "http://127.0.0.1:5000",
+  "qomochat_servers": [
+    "http://127.0.0.1:5000"
+  ]
+}

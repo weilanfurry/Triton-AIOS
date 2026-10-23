@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Triton AIOS</title>
+<link rel="stylesheet" href="/static/styles.css?v=20261018002631">
+<link rel="stylesheet" href="/static/veli.css?v=20261023a">
+<script src="/static/vendor/lucide.umd.min.js" defer></script>
+<script src="/static/vendor/marked.min.js" defer></script>
+</head>
+<body>
+<div id="triton-desktop" data-theme="system" role="group" aria-label="Triton AIOS 桌面原型">
+  <!-- 播放器常驻桌面根节点：AI 在后台播放时不需要打开音乐窗口 -->
+  <audio id="mp-audio" preload="metadata"></audio>
+  <div class="topbar">
+    <div class="tb-left">
+      <button class="icon-btn" id="btn-hide-wins" type="button" aria-label="隐藏所有窗口" aria-pressed="false" data-tooltip="隐藏所有窗口（再点一下恢复）">
+        <i data-lucide="eye-off" aria-hidden="true"></i>
+      </button>
+      <button class="icon-btn" id="btn-more" type="button" aria-label="更多" aria-expanded="false" data-tooltip="更多">
+        <i data-lucide="ellipsis" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="status" aria-hidden="true">
+      <i data-lucide="wifi"></i>
+      <i data-lucide="volume-2"></i>
+      <i data-lucide="battery-full"></i>
+      <span id="clock">--:--</span>
+    </div>
+  </div>
+
+  <div class="sb-backdrop" id="sb-backdrop"></div>
+  <aside class="sidebar" id="sidebar" aria-label="对话列表">
+    <div class="sb-head">
+      <span class="sb-title">对话</span>
+      <button class="sb-new" id="btn-new-chat" type="button"><i data-lucide="plus" aria-hidden="true"></i>新建对话</button>
+    </div>
+    <div class="sb-list" id="sb-list"></div>
+    <div class="sb-foot">
+      <i data-lucide="hard-drive" aria-hidden="true"></i>
+      <span>工作区：workspace/</span>
+    </div>
+  </aside>
+
+  <section class="chat" aria-label="AI 对话窗口">
+    <div class="chat-head">
+      <span class="chat-dot" aria-hidden="true"></span>
+      <div class="chat-meta">
+        <div class="chat-title" id="chat-title">Triton AIOS</div>
+        <div class="chat-sub" id="chat-sub">就绪 · 主控在线</div>
+      </div>
+      <span class="agent-badge" id="skill-badge" hidden><i data-lucide="sparkles" aria-hidden="true"></i>Skill</span>
+    </div>
+    <div class="chat-body">
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <aside class="agent-panel" id="agent-panel" hidden>
+        <div class="ap-head"><i data-lucide="folder-open" aria-hidden="true"></i>工作目录</div>
+        <div class="ap-sub">技能/主控可在此文件夹中新建、重命名、删除和写入文件</div>
+        <div class="ap-tree" id="ap-tree"></div>
+        <div class="ap-foot"><span id="ap-count">0 次改动</span><span>workspace/</span></div>
+      </aside>
+    </div>
+    <div class="input-dock">
+      <div class="skill-strip" id="skill-strip" hidden></div>
+      <div class="attach-strip" id="attach-strip" hidden></div>
+      <div class="pill" id="pill-form">
+        <button class="agent-toggle" id="skill-toggle" type="button" aria-pressed="false" aria-expanded="false" data-tooltip="技能：选一个专属能力再发送">
+          <i data-lucide="wand-sparkles" aria-hidden="true"></i>
+          <span class="agent-label">Skill</span>
+        </button>
+        <button class="pill-act" id="btn-pick-file" type="button" aria-label="添加文件" data-tooltip="添加文件（也可直接拖拽文件到窗口）">
+          <i data-lucide="paperclip" aria-hidden="true"></i>
+        </button>
+        <button class="pill-act" id="btn-pick-image" type="button" aria-label="添加图片" data-tooltip="添加图片（也可以直接 Ctrl+V 粘贴截图）">
+          <i data-lucide="image" aria-hidden="true"></i>
+        </button>
+        <input id="chat-input" type="text" autocomplete="off" placeholder="输入消息，Enter 发送…（可 Ctrl+V 粘贴图片）" aria-label="消息输入框">
+        <button class="send" id="send-btn" type="button" aria-label="发送"><i data-lucide="arrow-up" aria-hidden="true"></i></button>
+      </div>
+      <div class="skill-pop" id="skill-pop" hidden>
+        <div class="sp-head">
+          <span>选择技能</span>
+          <button type="button" class="sp-close" id="skill-pop-close" aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+        </div>
+        <div class="sp-list" id="sp-list"></div>
+        <div class="sp-foot">
+          <button type="button" class="sp-upload" id="sp-upload">
+            <i data-lucide="upload" aria-hidden="true"></i>上传 txt / json 提示词添加技能
+          </button>
+        </div>
+      </div>
+      <input type="file" id="pick-file" multiple hidden>
+      <input type="file" id="pick-image" accept="image/*" multiple hidden>
+      <input type="file" id="pick-skill" accept=".txt,.json,.md,.text,.prompt" hidden>
+    </div>
+    <!-- AI 对话窗口缩放手柄（复用系统窗口的 .win-rz 样式） -->
+    <span class="chat-rz win-rz" data-dir="n" aria-hidden="true"></span>
+    <span class="chat-rz win-rz" data-dir="s" aria-hidden="true"></span>
+    <span class="chat-rz win-rz" data-dir="w" aria-hidden="true"></span>
+    <span class="chat-rz win-rz" data-dir="e" aria-hidden="true"></span>
+    <span class="chat-rz win-rz corner" data-dir="ne" aria-hidden="true"></span>
+    <span class="chat-rz win-rz corner" data-dir="nw" aria-hidden="true"></span>
+    <span class="chat-rz win-rz corner" data-dir="se" aria-hidden="true"></span>
+    <span class="chat-rz win-rz corner" data-dir="sw" aria-hidden="true"></span>
+  </section>
+
+  <nav class="dock" id="dock" aria-label="任务栏"></nav>
+
+  <div class="launchpad" id="launchpad" aria-label="启动台">
+    <div class="lp-hero">
+      <div class="lp-title">启动台<span>LAUNCHPAD</span></div>
+      <div class="lp-clock" id="lp-clock">--:--</div>
+      <div class="lp-date" id="lp-date"></div>
+    </div>
+    <div class="lp-grid" id="lp-grid"></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+<script src="/static/app.js?v=20261023b" defer></script>
+</body>
+</html>

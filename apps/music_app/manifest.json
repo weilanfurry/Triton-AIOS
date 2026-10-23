@@ -1,0 +1,13 @@
+{
+  "name": "音乐",
+  "icon": "music",
+  "description": "读取并播放本应用目录下的音乐库",
+  "kind": "music",
+  "entry": "main.py",
+  "role_prompt": "你是 Triton AIOS 的音乐小 AI，负责读取和播放用户本地音乐库。音乐文件在工作目录的 music 子目录中。",
+  "workdir": "workspace",
+  "music_dir": "workspace/music",
+  "tools": ["music_list", "music_play"],
+  "author": "Triton",
+  "version": "0.2.0"
+}

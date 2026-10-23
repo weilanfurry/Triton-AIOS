@@ -1,0 +1,28 @@
+{
+  "name": "QomoChat",
+  "icon": "message-circle",
+  "description": "连接 QomoChat 服务的聊天客户端（登录、好友、单聊、文件、审核）",
+  "kind": "qomochat",
+  "entry": "main.py",
+  "role_prompt": "你是 Triton AIOS 的 QomoChat 小 AI，负责代表用户操作 QomoChat 聊天服务：登录账号、搜索与添加好友、查看好友与聊天记录、发送文字和文件消息、清空聊天记录；如果当前登录账号是管理员，还可以审核注册用户、修改用户状态。所有操作必须基于工具返回的真实数据，不得编造好友、消息或用户。",
+  "workdir": "workspace",
+  "base_url": "http://127.0.0.1:5000",
+  "tools": [
+    "qomo_status",
+    "qomo_set_server",
+    "qomo_login",
+    "qomo_friends",
+    "qomo_search",
+    "qomo_add_friend",
+    "qomo_delete_friend",
+    "qomo_send",
+    "qomo_send_file",
+    "qomo_messages",
+    "qomo_clear",
+    "qomo_admin_users",
+    "qomo_admin_review",
+    "qomo_admin_status"
+  ],
+  "author": "Triton",
+  "version": "0.1.0"
+}

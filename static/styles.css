@@ -1,0 +1,698 @@
+
+#triton-desktop{
+  --bg0: light-dark(#ffe7f1,#2c1021);           /* 壁纸底色：浅色主题＝浅粉 */
+  --bg1: light-dark(#f7c8de,#431a34);           /* 壁纸底色：深色主题＝暗玫粉 */
+  --glow-blue: rgba(255,118,182,.34);           /* 右上粉色光斑 */
+  --glow-green: rgba(255,176,216,.22);          /* 左下粉色柔光 */
+  --surface: light-dark(#ffffff,#242c40);
+  --surface-2: light-dark(#f2f5fb,#2c354b);
+  --surface-3: light-dark(#e5eaf4,#3a445e);
+  --text: light-dark(#1b2333,#e9edf6);
+  --text-2: light-dark(#5d6679,#a7afc3);
+  --border: light-dark(rgba(21,30,48,.13),rgba(255,255,255,.14));
+  --border-soft: light-dark(rgba(21,30,48,.07),rgba(255,255,255,.09));
+  --accent: light-dark(#4d6ef8,#6e8bff);
+  --accent-soft: light-dark(rgba(77,110,248,.14),rgba(110,139,255,.20));
+  --green: light-dark(#1f9d61,#43bf84);
+  --green-soft: light-dark(rgba(31,157,97,.13),rgba(67,191,132,.20));
+  --red: light-dark(#e5484d,#ff6369);
+  --amber: light-dark(#c98a13,#e8b23c);
+  --glass: light-dark(rgba(255,255,255,.70),rgba(25,31,47,.60));
+  --glass-strong: light-dark(rgba(255,255,255,.88),rgba(31,38,58,.88));
+  --shadow: 0 18px 50px -18px rgba(15,23,42,.45),0 2px 8px rgba(15,23,42,.12);
+  --shadow-soft: 0 10px 30px -12px rgba(15,23,42,.35);
+  --dock-reserve: clamp(56px,5.4vw,72px);   /* dock 改到右边后，给居中内容预留的空间 */
+  color-scheme: light dark;
+  position:relative;
+  width:100%;
+  aspect-ratio:16/10;
+  min-height:460px;
+  max-height:720px;
+  border-radius:18px;
+  overflow:hidden;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:14px;
+  line-height:1.45;
+  background:
+    radial-gradient(720px 340px at 78% -8%,var(--glow-blue),transparent 62%),
+    radial-gradient(640px 300px at 10% 110%,var(--glow-green),transparent 60%),
+    linear-gradient(150deg,var(--bg0),var(--bg1));
+}
+#triton-desktop[data-theme="light"]{color-scheme:light}
+#triton-desktop[data-theme="dark"]{color-scheme:dark}
+#triton-desktop *,#triton-desktop *::before,#triton-desktop *::after{box-sizing:border-box}
+#triton-desktop button{font:inherit}
+#triton-desktop input,#triton-desktop textarea{font:inherit;user-select:text}
+#triton-desktop i{flex:none}
+#triton-desktop svg{width:16px;height:16px}
+#triton-desktop [hidden]{display:none!important}
+
+/* Top bar */
+#triton-desktop .topbar{position:absolute;inset:12px 16px auto;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none}
+#triton-desktop .topbar>*{pointer-events:auto}
+#triton-desktop .tb-left{display:flex;align-items:center;gap:8px}
+#triton-desktop .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--glass);color:var(--text);cursor:pointer;box-shadow:var(--shadow-soft);transition:background .15s}
+#triton-desktop .icon-btn:hover{background:var(--surface-2)}
+#triton-desktop .icon-btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+#triton-desktop .status{display:flex;align-items:center;gap:10px;color:var(--text);font-size:12px;font-weight:500;background:var(--glass);border:1px solid var(--border);padding:6px 12px;border-radius:999px;box-shadow:var(--shadow-soft);backdrop-filter:blur(12px)}
+#triton-desktop .status i{width:14px;height:14px}
+
+/* Conversation sidebar */
+#triton-desktop .sb-backdrop{position:absolute;inset:0;z-index:29;background:light-dark(rgba(15,23,42,.18),rgba(5,8,16,.42));opacity:0;pointer-events:none;transition:opacity .25s}
+#triton-desktop .sb-backdrop.show{opacity:1;pointer-events:auto}
+#triton-desktop .sidebar{position:absolute;left:12px;top:12px;bottom:80px;width:266px;max-width:calc(100% - 24px);z-index:30;display:flex;flex-direction:column;background:var(--glass-strong);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);backdrop-filter:blur(20px);transform:translateX(-120%);transition:transform .28s cubic-bezier(.22,.9,.28,1);overflow:hidden}
+#triton-desktop .sidebar.open{transform:translateX(0)}
+#triton-desktop .sb-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 14px 10px}
+#triton-desktop .sb-title{font-weight:600;font-size:14px}
+#triton-desktop .sb-new{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--accent);border:none;color:#fff;cursor:pointer;font-size:12px;font-weight:500;box-shadow:var(--shadow-soft)}
+#triton-desktop .sb-new:hover{filter:brightness(1.08)}
+#triton-desktop .sb-new svg{width:13px;height:13px}
+#triton-desktop .sb-list{flex:1;overflow:auto;padding:2px 8px 8px}
+#triton-desktop .sb-item{position:relative;display:flex;gap:10px;align-items:center;width:100%;padding:9px 32px 9px 10px;border-radius:11px;cursor:pointer;border:1px solid transparent;text-align:left;background:transparent;color:var(--text)}
+#triton-desktop .sb-item:hover{background:var(--surface-2)}
+#triton-desktop .sb-item.active{background:var(--accent-soft);border-color:transparent}
+#triton-desktop .sb-del{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:none;border-radius:8px;background:transparent;color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .12s,background .12s}
+#triton-desktop .sb-item:hover .sb-del{opacity:1}
+#triton-desktop .sb-del:hover{background:var(--surface-3);color:var(--red)}
+#triton-desktop .sb-del.confirm{opacity:1;background:var(--red);color:#fff;width:auto;padding:0 8px;font-size:11px}
+#triton-desktop .sb-del svg{width:13px;height:13px}
+#triton-desktop .sb-item{padding-right:62px}
+#triton-desktop .sb-ren{position:absolute;right:33px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:none;border-radius:8px;background:transparent;color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .12s,background .12s,color .12s}
+#triton-desktop .sb-item:hover .sb-ren{opacity:1}
+#triton-desktop .sb-ren:hover{background:var(--surface-3);color:var(--accent)}
+#triton-desktop .sb-ren svg{width:13px;height:13px}
+#triton-desktop .sb-rename-input{width:100%;border:1px solid var(--accent);background:var(--surface);color:var(--text);border-radius:6px;padding:2px 6px;font-size:13px;outline:none}
+#triton-desktop .sb-ic{width:30px;height:30px;border-radius:9px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--text-2);flex:none}
+#triton-desktop .sb-item.active .sb-ic{background:var(--accent);color:#fff}
+#triton-desktop .sb-ic svg{width:15px;height:15px}
+#triton-desktop .sb-meta{min-width:0;flex:1}
+#triton-desktop .sb-name{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .sb-time{display:block;font-size:11px;color:var(--text-2)}
+/* 侧栏：这个对话记着的技能 */
+#triton-desktop .sb-skill-tag{display:inline-flex;align-items:center;gap:3px;margin-left:5px;padding:0 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:10px;line-height:15px;vertical-align:middle;max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#triton-desktop .sb-skill-tag svg{width:10px;height:10px;flex:none}
+#triton-desktop .sb-foot{padding:9px 14px;border-top:1px solid var(--border-soft);display:flex;gap:8px;align-items:center;color:var(--text-2);font-size:11.5px}
+#triton-desktop .sb-foot svg{width:13px;height:13px}
+
+/* Chat window */
+#triton-desktop .chat{position:absolute;left:calc(50% - var(--dock-reserve)/2);top:54px;bottom:20px;transform:translateX(-50%);width:min(760px,calc(100% - 32px - var(--dock-reserve)));z-index:10;display:flex;flex-direction:column;background:var(--glass-strong);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);backdrop-filter:blur(22px);overflow:hidden}
+#triton-desktop .chat-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border-soft)}
+/* AI 对话窗口：拖顶部标题栏可以挪动（双击标题栏归位） */
+#triton-desktop .chat-head{cursor:grab;touch-action:none;user-select:none}
+#triton-desktop .chat-head:active{cursor:grabbing}
+#triton-desktop .chat.dragging{transition:none;box-shadow:var(--shadow),0 0 0 2px var(--accent-soft)}
+#triton-desktop .chat.floating{left:auto;right:auto;transform:none;bottom:auto}
+/* 右下角给个可见的缩放握把（其它边只有鼠标指针变化） */
+#triton-desktop .chat .win-rz[data-dir="se"]{
+  background:
+    linear-gradient(135deg,transparent 60%,var(--text-2) 60%,var(--text-2) 68%,transparent 68%),
+    linear-gradient(135deg,transparent 78%,var(--text-2) 78%,var(--text-2) 86%,transparent 86%);
+  opacity:.45;
+}
+#triton-desktop .chat .win-rz[data-dir="se"]:hover{opacity:.85}
+
+/* 隐藏所有窗口（只留 AI 对话窗口）：用类切换，窗口自己的显示状态不受影响 */
+#triton-desktop.hide-wins .win{display:none!important}
+#triton-desktop .chat-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+#triton-desktop .chat-meta{flex:1;min-width:0}
+#triton-desktop .chat-title{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .chat-sub{font-size:11.5px;color:var(--text-2)}
+#triton-desktop .agent-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-soft);color:var(--green);border:1px solid var(--green);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:500}
+#triton-desktop .agent-badge svg{width:13px;height:13px}
+#triton-desktop .chat-body{flex:1;display:flex;min-height:0;position:relative}
+#triton-desktop .msgs{flex:1;min-width:0;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+#triton-desktop .msgs:empty{padding:0}
+
+/* Hero */
+#triton-desktop .hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:0 18px;min-height:0}
+#triton-desktop .hero-logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow-soft)}
+#triton-desktop .hero-logo svg{width:26px;height:26px}
+#triton-desktop .hero h2{margin:0;font-size:19px;font-weight:600}
+#triton-desktop .hero p{margin:0;color:var(--text-2);font-size:12.5px;max-width:430px}
+#triton-desktop .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
+#triton-desktop .chip{border:1px solid var(--border);background:var(--surface);color:var(--text);padding:7px 13px;border-radius:999px;font-size:12.5px;cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+#triton-desktop .chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+/* Messages */
+#triton-desktop .msg{display:flex;gap:9px;max-width:86%;align-items:flex-start}
+#triton-desktop .msg.user{align-self:flex-end;flex-direction:row-reverse}
+#triton-desktop .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;font-size:12px;font-weight:500}
+#triton-desktop .msg.user .avatar{background:var(--accent);color:#fff}
+#triton-desktop .msg.ai .avatar,#triton-desktop .msg.agent .avatar{background:var(--surface-3);color:var(--text)}
+#triton-desktop .avatar svg{width:14px;height:14px}
+#triton-desktop .bubble-wrap{min-width:0;max-width:100%;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+#triton-desktop .msg.user .bubble-wrap{align-items:flex-end}
+#triton-desktop .bubble{padding:9px 13px;border-radius:14px;font-size:13px;background:var(--surface-2);border:1px solid var(--border-soft);white-space:pre-wrap;overflow-wrap:anywhere}
+#triton-desktop .msg.user .bubble{background:var(--accent);color:#fff;border-color:transparent;border-bottom-right-radius:4px}
+#triton-desktop .msg.ai .bubble{border-bottom-left-radius:4px}
+#triton-desktop .msg.agent .bubble{background:var(--green-soft);border:1px solid var(--green)}
+#triton-desktop .steps{display:block;margin:0;padding:8px 10px;border-radius:9px;background:var(--surface);border:1px solid var(--border-soft);color:var(--text-2);font:11.5px/1.5 ui-monospace,"Cascadia Code",Consolas,monospace;white-space:pre-wrap;overflow:auto;max-width:100%;max-height:240px}
+#triton-desktop .steps-box{max-width:100%}
+#triton-desktop .steps-box>summary{cursor:pointer;font-size:11.5px;color:var(--text-2);list-style:none;display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid var(--border);border-radius:999px;background:var(--surface);transition:color .12s,border-color .12s}
+#triton-desktop .steps-box>summary::-webkit-details-marker{display:none}
+#triton-desktop .steps-box>summary::before{content:'▸';font-size:10px;line-height:1}
+#triton-desktop .steps-box[open]>summary::before{content:'▾'}
+#triton-desktop .steps-box>summary:hover{border-color:var(--accent);color:var(--accent)}
+#triton-desktop .steps-box .steps{margin-top:6px}
+/* responsive tweaks below */
+#triton-desktop .step-box{display:flex;flex-direction:column;gap:6px;max-width:100%}
+#triton-desktop .thinking{color:var(--text-2);opacity:.8}
+#triton-desktop .bubble.md p{margin:0 0 6px}
+#triton-desktop .bubble.md p:last-child{margin-bottom:0}
+#triton-desktop .bubble.md ul,#triton-desktop .bubble.md ol{margin:4px 0 6px;padding-left:18px}
+#triton-desktop .bubble.md code{background:var(--surface-3);padding:1px 5px;border-radius:5px;font:11.5px/1.5 ui-monospace,"Cascadia Code",Consolas,monospace}
+#triton-desktop .bubble.md pre{background:var(--surface);border:1px solid var(--border-soft);border-radius:9px;padding:8px 10px;overflow-x:auto;margin:6px 0}
+#triton-desktop .bubble.md pre code{background:transparent;padding:0}
+#triton-desktop .bubble.md a{color:var(--accent);text-decoration:underline}
+#triton-desktop .bubble.md h1,#triton-desktop .bubble.md h2,#triton-desktop .bubble.md h3,#triton-desktop .bubble.md h4{font-size:14px;font-weight:600;margin:8px 0 4px}
+#triton-desktop .bubble.md blockquote{border-left:3px solid var(--border);margin:6px 0;padding:2px 10px;color:var(--text-2)}
+#triton-desktop .bubble.md table{border-collapse:collapse;margin:6px 0;font-size:12px}
+#triton-desktop .bubble.md th,#triton-desktop .bubble.md td{border:1px solid var(--border);padding:4px 8px}
+#triton-desktop .chip-row{display:flex;flex-wrap:wrap;gap:6px}
+#triton-desktop .typing{display:inline-flex;gap:4px;align-items:center;padding:4px 2px}
+#triton-desktop .typing span{width:5px;height:5px;border-radius:50%;background:var(--text-2);animation:td-blink 1.1s infinite}
+#triton-desktop .typing span:nth-child(2){animation-delay:.18s}
+#triton-desktop .typing span:nth-child(3){animation-delay:.36s}
+@keyframes td-blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+/* Pill input */
+#triton-desktop .input-dock{padding:10px 14px 14px;border-top:1px solid var(--border-soft);display:flex;flex-direction:column;gap:8px}
+#triton-desktop .pill{display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:7px 8px 7px 10px;box-shadow:var(--shadow-soft);transition:border-color .2s,box-shadow .2s}
+#triton-desktop .pill:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#triton-desktop .pill.agent-on{border-color:var(--green)}
+#triton-desktop .pill.drop{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#triton-desktop .pill input{flex:1;min-width:0;border:none;outline:none;background:transparent;color:var(--text);font-size:13.5px}
+#triton-desktop .pill input::placeholder{color:var(--text-2)}
+#triton-desktop .agent-toggle{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2);border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer;transition:color .15s,background .15s,border-color .15s}
+#triton-desktop .agent-toggle[aria-pressed="true"]{background:var(--green-soft);color:var(--green);border-color:var(--green)}
+#triton-desktop .agent-toggle svg{width:13px;height:13px}
+#triton-desktop .pill-act{width:28px;height:28px;border-radius:8px;border:none;background:transparent;color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;transition:color .15s,background .15s}
+#triton-desktop .pill-act:hover{background:var(--surface-2);color:var(--accent)}
+#triton-desktop .pill-act svg{width:15px;height:15px}
+#triton-desktop .send{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;transition:filter .15s}
+#triton-desktop .send:hover{filter:brightness(1.1)}
+#triton-desktop .send[disabled]{opacity:.55;cursor:progress}
+#triton-desktop .send svg{width:15px;height:15px}
+
+/* 附件：粘贴 / 选择进来的图片与文件 */
+#triton-desktop .attach-strip{display:flex;flex-wrap:wrap;gap:7px;padding:0 2px}
+#triton-desktop .attach-chip{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:5px 7px 5px 5px;max-width:230px}
+#triton-desktop .attach-thumb{width:34px;height:34px;border-radius:8px;object-fit:cover;background:var(--surface-3);flex:none;display:block}
+#triton-desktop .attach-ic{width:34px;height:34px;border-radius:8px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;flex:none;color:var(--text-2)}
+#triton-desktop .attach-ic svg{width:15px;height:15px}
+#triton-desktop .attach-meta{min-width:0;display:flex;flex-direction:column}
+#triton-desktop .attach-name{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#triton-desktop .attach-size{font-size:10.5px;color:var(--text-2)}
+#triton-desktop .attach-x{border:none;background:transparent;color:var(--text-2);cursor:pointer;padding:2px;border-radius:6px;display:flex;flex:none}
+#triton-desktop .attach-x:hover{background:var(--surface-3);color:var(--red)}
+#triton-desktop .attach-x svg{width:13px;height:13px}
+
+/* 气泡里的附件缩略 */
+#triton-desktop .bubble-atts{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+#triton-desktop .bubble-att{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border-soft);border-radius:9px;padding:4px 7px;font-size:11.5px;color:var(--text);max-width:200px}
+#triton-desktop .bubble-att img{width:26px;height:26px;border-radius:6px;object-fit:cover;display:block;background:var(--surface-3)}
+#triton-desktop .bubble-att svg{width:13px;height:13px;color:var(--text-2);flex:none}
+#triton-desktop .bubble-att .ba-nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#triton-desktop .msg.user .bubble-atts{justify-content:flex-end}
+#triton-desktop .msg.user .bubble-att{background:rgba(255,255,255,.20);border-color:transparent;color:#fff}
+#triton-desktop .msg.user .bubble-att svg{color:#fff}
+
+/* ===== 技能（Skill）：入口按钮 / 弹窗 / 生效条 ===== */
+#triton-desktop .pill.skill-on{border-color:var(--accent)}
+#triton-desktop .skill-strip{display:flex;align-items:center;gap:8px;padding:0 2px;flex-wrap:wrap}
+#triton-desktop .skill-chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:4px 6px 4px 10px;font-size:12px;font-weight:500}
+#triton-desktop .skill-chip svg{width:13px;height:13px}
+#triton-desktop .skill-chip .sc-x{border:none;background:transparent;color:var(--accent);cursor:pointer;display:flex;padding:1px;border-radius:50%}
+#triton-desktop .skill-chip .sc-x:hover{background:var(--accent);color:#fff}
+#triton-desktop .skill-chip .sc-x svg{width:11px;height:11px}
+#triton-desktop .skill-tip{font-size:11px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+
+#triton-desktop .input-dock{position:relative}
+#triton-desktop .skill-pop{position:absolute;left:14px;right:14px;bottom:calc(100% + 6px);max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);z-index:40;overflow:hidden}
+#triton-desktop .sp-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 6px;font-size:12px;font-weight:600;color:var(--text-2)}
+#triton-desktop .sp-close{border:none;background:transparent;color:var(--text-2);cursor:pointer;display:flex;padding:2px;border-radius:6px}
+#triton-desktop .sp-close:hover{background:var(--surface-2);color:var(--text)}
+#triton-desktop .sp-close svg{width:13px;height:13px}
+#triton-desktop .sp-list{max-height:min(46vh,320px);overflow-y:auto;padding:2px 6px 6px}
+#triton-desktop .sp-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:none;background:transparent;color:var(--text);padding:8px 9px;border-radius:10px;cursor:pointer;position:relative}
+#triton-desktop .sp-item:hover{background:var(--surface-2)}
+#triton-desktop .sp-item.active{background:var(--accent-soft)}
+#triton-desktop .sp-ic{width:28px;height:28px;border-radius:9px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;flex:none;color:var(--text-2)}
+#triton-desktop .sp-item.active .sp-ic{background:var(--accent);color:#fff}
+#triton-desktop .sp-ic svg{width:15px;height:15px}
+#triton-desktop .sp-meta{min-width:0;display:flex;flex-direction:column;gap:1px}
+#triton-desktop .sp-name{font-size:12.5px;font-weight:500;display:flex;align-items:center;gap:6px}
+#triton-desktop .sp-tag{font-style:normal;font-size:10px;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:0 4px}
+#triton-desktop .sp-desc{font-size:11px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#triton-desktop .sp-del{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--text-2);font-size:14px;padding:2px 6px;border-radius:6px}
+#triton-desktop .sp-del:hover{background:var(--surface-3);color:var(--red)}
+#triton-desktop .sp-foot{border-top:1px solid var(--border-soft);padding:6px}
+#triton-desktop .sp-upload{display:flex;align-items:center;gap:7px;width:100%;border:none;background:transparent;color:var(--text-2);font-size:12px;padding:7px 9px;border-radius:9px;cursor:pointer}
+#triton-desktop .sp-upload:hover{background:var(--surface-2);color:var(--accent)}
+#triton-desktop .sp-upload svg{width:14px;height:14px}
+
+/* 技能标签（AI 气泡上方的小标记） */
+#triton-desktop .msg-skill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 8px}
+#triton-desktop .msg-skill svg{width:11px;height:11px}
+
+/* AI 生成的网页应用：iframe 窗口 */
+#triton-desktop .win.app-win{width:min(680px,calc(100% - 28px));height:min(540px,calc(100% - 128px))}
+#triton-desktop .app-host{flex:1;min-height:0;display:flex;background:var(--surface)}
+#triton-desktop .app-frame{flex:1;width:100%;height:100%;border:0;display:block;background:#fff}
+
+/* Agent workspace panel */
+#triton-desktop .agent-panel{width:216px;flex:none;display:flex;flex-direction:column;min-height:0;background:var(--surface-2);border-left:1px solid var(--border-soft)}
+#triton-desktop .ap-head{padding:12px 12px 6px;display:flex;align-items:center;gap:7px;font-weight:600;font-size:12.5px}
+#triton-desktop .ap-head svg{width:14px;height:14px}
+#triton-desktop .ap-sub{padding:0 12px 8px;font-size:11px;color:var(--text-2)}
+#triton-desktop .ap-tree{flex:1;overflow:auto;padding:2px 8px 8px}
+#triton-desktop .ap-foot{padding:8px 12px;border-top:1px solid var(--border-soft);font-size:11.5px;color:var(--text-2);display:flex;justify-content:space-between}
+
+/* File tree */
+#triton-desktop .tree-item{display:flex;align-items:center;gap:7px;width:100%;border:none;background:transparent;color:var(--text-2);text-align:left;padding:5px 8px;border-radius:8px;cursor:pointer;font-size:12.5px;transition:background .12s}
+#triton-desktop .tree-item:hover{background:var(--surface-3)}
+#triton-desktop .tree-item.folder{color:var(--text);font-weight:500}
+#triton-desktop .tree-item.sel{background:var(--accent-soft);color:var(--accent)}
+#triton-desktop .tree-item svg{width:15px;height:15px}
+#triton-desktop .tree-item .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+#triton-desktop .tree-item .sz{font-size:10.5px;opacity:.7}
+
+/* Dock */
+#triton-desktop .dock{position:absolute;right:10px;left:auto;bottom:auto;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:9px 7px;max-height:calc(100% - 20px);background:var(--glass);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+#triton-desktop .dock-item{position:relative;width:44px;height:44px;flex:none;border-radius:12px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);transition:transform .12s ease-out;transform-origin:center right;will-change:transform}
+#triton-desktop .dock-item:hover{background:var(--surface-2)}
+#triton-desktop .d-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 10px rgba(15,23,42,.25);transition:transform .15s}
+#triton-desktop .d-ic svg{width:18px;height:18px}
+#triton-desktop .dock-item:hover .d-ic{transform:scale(1.06)}
+#triton-desktop .dot{position:absolute;left:-4px;top:50%;bottom:auto;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:0;transition:opacity .15s,background .15s}
+/* 小点只代表「程序在运行」（含最小化、含后台播放） */
+#triton-desktop .dock-item.active .dot{opacity:1;background:var(--accent)}
+#triton-desktop .dock-item.playing .dot{opacity:1;background:var(--green)}
+#triton-desktop .dock-item.active.playing .dot{background:var(--green)}
+#triton-desktop .dock-item.playing .d-ic{box-shadow:0 0 0 2px var(--green-soft)}
+#triton-desktop .sep{width:auto;height:1px;align-self:stretch;margin:2px 4px;background:var(--border)}
+#triton-desktop .ic-grid{background:linear-gradient(135deg,#8b9dc9,#5f7299)}
+#triton-desktop .ic-blue{background:linear-gradient(135deg,#5b8cff,#3b6ef5)}
+#triton-desktop .ic-pink{background:linear-gradient(135deg,#ff9db0,#f26a8d)}
+#triton-desktop .ic-purple{background:linear-gradient(135deg,#a78bfa,#7c5cf0)}
+#triton-desktop .ic-gray{background:linear-gradient(135deg,#8e96a8,#6b7280)}
+#triton-desktop .ic-trash{background:linear-gradient(135deg,#c3cad6,#9aa3b5)}
+
+/* Launchpad */
+#triton-desktop .launchpad{position:absolute;inset:0;z-index:40;background:light-dark(rgba(15,20,35,.34),rgba(8,10,18,.56));backdrop-filter:blur(24px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}
+#triton-desktop .launchpad.open{opacity:1;pointer-events:auto}
+#triton-desktop .lp-title{color:#fff;font-size:20px;font-weight:600;margin-bottom:22px;text-shadow:0 2px 12px rgba(0,0,0,.35)}
+#triton-desktop .lp-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 36px}
+#triton-desktop .lp-app{display:flex;flex-direction:column;align-items:center;gap:8px;background:transparent;border:none;color:#fff;cursor:pointer;width:76px;transition:transform .15s}
+#triton-desktop .lp-app:hover .lp-ic{transform:scale(1.07)}
+#triton-desktop .lp-app.soon{opacity:.55;cursor:default}
+#triton-desktop .lp-ic{width:62px;height:62px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 22px rgba(0,0,0,.3);transition:transform .15s}
+#triton-desktop .lp-ic svg{width:28px;height:28px}
+#triton-desktop .ic-soon{background:linear-gradient(135deg,#b9c1cf,#8f99aa)}
+#triton-desktop .lp-name{font-size:12px;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+#triton-desktop .lp-name em{display:block;font-style:normal;font-size:10px;opacity:.85}
+
+/* Windows */
+#triton-desktop .win{position:absolute;z-index:25;width:min(400px,calc(100% - 24px));height:min(330px,calc(100% - 116px));display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;animation:td-win-in .18s ease}
+@keyframes td-win-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+#triton-desktop .win.focused{box-shadow:0 24px 60px -18px rgba(15,23,42,.55),0 2px 10px rgba(15,23,42,.18)}
+#triton-desktop .win-rz{position:absolute;z-index:3;touch-action:none}
+#triton-desktop .win-rz[data-dir="n"]{top:0;left:16px;right:16px;height:8px;cursor:ns-resize}
+#triton-desktop .win-rz[data-dir="s"]{bottom:0;left:16px;right:16px;height:8px;cursor:ns-resize}
+#triton-desktop .win-rz[data-dir="w"]{top:16px;bottom:16px;left:0;width:8px;cursor:ew-resize}
+#triton-desktop .win-rz[data-dir="e"]{top:16px;bottom:16px;right:0;width:8px;cursor:ew-resize}
+#triton-desktop .win-rz.corner{width:20px;height:20px}
+#triton-desktop .win-rz[data-dir="ne"]{top:1px;right:1px;cursor:nesw-resize}
+#triton-desktop .win-rz[data-dir="nw"]{top:1px;left:1px;cursor:nwse-resize}
+#triton-desktop .win-rz[data-dir="se"]{bottom:1px;right:1px;cursor:nwse-resize}
+#triton-desktop .win-rz[data-dir="sw"]{bottom:1px;left:1px;cursor:nesw-resize}
+#triton-desktop .win-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:move;background:var(--surface-2);border-bottom:1px solid var(--border-soft);touch-action:none}
+#triton-desktop .wb-ic{width:20px;height:20px;color:var(--text);display:flex;align-items:center;justify-content:center}
+#triton-desktop .wb-ic svg{width:16px;height:16px}
+#triton-desktop .wb-title{flex:1;font-size:12.5px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#triton-desktop .wb-ctl{display:flex;gap:6px;position:relative;z-index:4}
+#triton-desktop .wb-ctl button{width:14px;height:14px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;color:rgba(0,0,0,.65)}
+#triton-desktop .wb-min{background:#f5bd4f}
+#triton-desktop .wb-close{background:#ff5f57}
+#triton-desktop .win-body{flex:1;min-height:0;overflow:auto;padding:12px}
+
+/* Files app */
+#triton-desktop .files-body{display:flex;height:100%;min-height:0}
+#triton-desktop .fb-tree{width:46%;min-width:0;border-right:1px solid var(--border-soft);padding:8px;overflow:auto}
+#triton-desktop .fb-tree-title{font-size:11.5px;color:var(--text-2);padding:2px 6px 6px}
+#triton-desktop .fb-view{flex:1;min-width:0;display:flex;flex-direction:column;padding:8px}
+#triton-desktop .fb-meta{font-size:11px;color:var(--text-2);padding:2px 2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .fb-view textarea{flex:1;min-height:0;resize:none;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text);padding:8px;font:12px/1.5 ui-monospace,Consolas,monospace;outline:none;width:100%}
+#triton-desktop .fb-actions{padding-top:7px;text-align:right}
+#triton-desktop .fb-ops{display:flex;flex-wrap:wrap;gap:5px;padding:2px 2px 8px}
+#triton-desktop .fb-ops input{flex:1;min-width:88px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:5px 8px;font-size:12px;outline:none}
+#triton-desktop .fb-ops input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#triton-desktop .fb-ops .mini-btn{padding:4px 8px;font-size:11.5px}
+#triton-desktop .fb-actions{display:flex;gap:6px;justify-content:flex-end}
+#triton-desktop .fb-out{margin:7px 0 0;max-height:130px;overflow:auto;background:var(--surface-2);border:1px solid var(--border-soft);border-radius:9px;padding:8px;font:11.5px/1.5 ui-monospace,"Cascadia Code",Consolas,monospace;color:var(--text);white-space:pre-wrap}
+
+/* 文件管理器 */
+#triton-desktop .fm{position:relative;display:flex;flex-direction:column;height:100%;min-height:0}
+#triton-desktop .fm-bar{display:flex;align-items:center;gap:6px;padding-bottom:8px;flex-wrap:wrap}
+#triton-desktop .fm-path{flex:1;min-width:70px;font-size:12px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .fm-name-input{width:104px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:4px 8px;font-size:12px;outline:none}
+#triton-desktop .fm-name-input:focus{border-color:var(--accent)}
+#triton-desktop .fm-head{display:grid;grid-template-columns:1fr 64px 84px;gap:8px;padding:4px 8px 4px 26px;font-size:11px;color:var(--text-2);border-bottom:1px solid var(--border-soft)}
+#triton-desktop .fm-list{flex:1;min-height:0;overflow:auto;padding:2px 0}
+#triton-desktop .fm-row{display:grid;grid-template-columns:18px 1fr 64px 84px;gap:8px;align-items:center;padding:5px 8px;border-radius:8px;font-size:12.5px}
+#triton-desktop .fm-row:hover{background:var(--surface-2)}
+#triton-desktop .fm-row.sel{background:var(--accent-soft);color:var(--accent)}
+#triton-desktop .fm-ic{display:flex;align-items:center;justify-content:center;color:var(--text-2)}
+#triton-desktop .fm-row.sel .fm-ic{color:var(--accent)}
+#triton-desktop .fm-ic svg{width:14px;height:14px}
+#triton-desktop .fm-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .fm-size,#triton-desktop .fm-time{font-size:11px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .fm-empty{padding:22px;text-align:center;color:var(--text-2);font-size:12px}
+#triton-desktop .fm-rename{width:100%;border:1px solid var(--accent);background:var(--surface);color:var(--text);border-radius:6px;padding:2px 6px;font-size:12.5px;outline:none}
+#triton-desktop .fm-editor{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
+#triton-desktop .fm-editor-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#triton-desktop .fm-editor-name{flex:1;min-width:60px;font-size:12px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .fm-editor textarea{flex:1;min-height:0;resize:none;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text);padding:8px;font:12px/1.5 ui-monospace,Consolas,monospace;outline:none;width:100%}
+#triton-desktop .fm-out{margin:0;max-height:120px;overflow:auto;background:var(--surface-2);border:1px solid var(--border-soft);border-radius:9px;padding:8px;font:11.5px/1.5 ui-monospace,Consolas,monospace;color:var(--text);white-space:pre-wrap}
+#triton-desktop .fm-menu{position:absolute;z-index:5;min-width:112px;background:var(--glass-strong);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:4px;display:flex;flex-direction:column;backdrop-filter:blur(10px)}
+#triton-desktop .fm-menu button{border:none;background:transparent;color:var(--text);text-align:left;font-size:12.5px;padding:6px 10px;border-radius:7px;cursor:pointer}
+#triton-desktop .fm-menu button:hover{background:var(--surface-2)}
+#triton-desktop .fm-menu button[data-act="delete"]:hover{background:var(--red);color:#fff}
+#triton-desktop .mini-btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;transition:background .12s}
+#triton-desktop .mini-btn:hover{background:var(--surface-3)}
+#triton-desktop .mini-btn.primary{background:var(--accent);border-color:transparent;color:#fff}
+
+/* Music app */
+#triton-desktop .music-list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:2px}
+#triton-desktop .m-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;color:var(--text)}
+#triton-desktop .m-item:hover{background:var(--surface-2)}
+#triton-desktop .m-item.playing{background:var(--accent-soft);color:var(--accent)}
+#triton-desktop .m-ic{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#ff9db0,#f26a8d);display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
+#triton-desktop .m-ic svg{width:15px;height:15px}
+#triton-desktop .m-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}
+#triton-desktop .m-art{font-size:11px;color:var(--text-2)}
+#triton-desktop .m-dur{font-size:11px;color:var(--text-2)}
+#triton-desktop .music-player{border-top:1px solid var(--border-soft);padding:9px 12px 11px;background:var(--surface-2)}
+#triton-desktop .mp-info{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:7px}
+#triton-desktop .mp-info b{font-weight:500}
+#triton-desktop .mp-prog{height:4px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+#triton-desktop .mp-bar{height:100%;width:0;background:var(--accent);border-radius:999px}
+#triton-desktop .mp-audio{display:none}
+#triton-desktop .mp-meta{display:flex;align-items:center;gap:7px;margin-top:8px;flex-wrap:wrap}
+#triton-desktop .mp-meta span{margin-left:auto;font-size:11px;color:var(--text-2)}
+#triton-desktop .win-body.music-body{display:flex;flex-direction:column;overflow:hidden;padding:0}
+#triton-desktop .win-body.music-body .music-list{flex:1;min-height:0;overflow-y:auto;padding:6px}
+#triton-desktop .win-body.music-body .music-player{flex:none}
+#triton-desktop .music-empty{padding:26px 14px;text-align:center;color:var(--text-2);font-size:12.5px}
+#triton-desktop .generic-app{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:8px;padding:14px;color:var(--text-2)}
+#triton-desktop .generic-app .ga-ic{width:44px;height:44px;border-radius:12px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--text)}
+#triton-desktop .generic-app .ga-name{font-weight:600;color:var(--text)}
+#triton-desktop .generic-app .ga-desc{font-size:12px}
+#triton-desktop .generic-app .ga-hint{font-size:11px}
+
+/* ===== QomoChat 客户端窗口 ===== */
+#triton-desktop .ic-green{background:linear-gradient(135deg,#4ade80,#16a34a)}
+#triton-desktop .win.qc-win{width:min(560px,calc(100% - 24px));height:min(430px,calc(100% - 116px))}
+#triton-desktop .win.qc-win .win-body{overflow:hidden;padding:0}
+#triton-desktop .qc-root{height:100%;min-height:0;display:flex;width:100%;min-width:0;overflow:hidden}
+#triton-desktop .qc-login{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:24px}
+#triton-desktop .qc-brand{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--text)}
+#triton-desktop .qc-server{font-size:11.5px;color:var(--text-2)}
+#triton-desktop .qc-login input{border:1px solid var(--border-soft);border-radius:8px;padding:9px 11px;background:var(--surface-2);color:var(--text);outline:none}
+#triton-desktop .qc-status{font-size:11.5px;color:#e5484d;min-height:16px}
+#triton-desktop .qc-server-row{display:flex;gap:6px;min-width:0}
+#triton-desktop .qc-server-row input{flex:1;min-width:0;font-size:12px;padding:8px 10px}
+#triton-desktop .qc-main{flex:1;display:flex;min-height:0;min-width:0;overflow:hidden}
+#triton-desktop .qc-side{flex:0 0 172px;width:172px;min-width:0;border-right:1px solid var(--border-soft);display:flex;flex-direction:column;padding:8px;gap:6px;overflow:hidden}
+#triton-desktop .qc-me{display:flex;flex-direction:column;font-size:12px;padding:4px 6px;min-width:0}
+#triton-desktop .qc-me b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#triton-desktop .qc-me .qc-uid{color:var(--text-2);font-size:11px}
+#triton-desktop .qc-search{display:flex;gap:6px;min-width:0}
+#triton-desktop .qc-search input{flex:1;min-width:0;border:1px solid var(--border-soft);border-radius:8px;padding:7px 9px;background:var(--surface-2);color:var(--text);outline:none}
+#triton-desktop .qc-label{font-size:11.5px;color:var(--text-2);padding:4px 6px 0;display:flex;justify-content:space-between}
+#triton-desktop .qc-list{list-style:none;margin:0;padding:0;overflow:auto;flex:1 1 auto;min-height:0;min-width:0}
+#triton-desktop #qc-search-list{flex:0 1 auto;max-height:38%}
+#triton-desktop #qc-friends{flex:1 1 auto}
+#triton-desktop .qc-friend{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:12.5px;min-width:0}
+#triton-desktop .qc-friend:hover,#triton-desktop .qc-friend.active{background:var(--surface-3)}
+#triton-desktop .qc-friend b{color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#triton-desktop .qc-friend span{color:var(--text-2);font-size:11px;white-space:nowrap}
+#triton-desktop .qc-foot{display:flex;align-items:center;gap:6px;padding-top:6px;border-top:1px solid var(--border-soft);min-width:0}
+#triton-desktop .qc-foot .mini-btn{flex:1}
+#triton-desktop .qc-chat{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+#triton-desktop .qc-head{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--border-soft);font-size:13px;min-width:0}
+#triton-desktop .qc-head b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#triton-desktop .qc-head .qc-uid{margin-left:auto;color:var(--text-2);font-size:11px;white-space:nowrap}
+#triton-desktop .qc-msgs{flex:1;min-height:0;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:7px}
+#triton-desktop .qc-msg{max-width:72%;align-self:flex-start;width:fit-content;padding:7px 11px;border-radius:10px;background:var(--surface-3);color:var(--text);font-size:12.5px;word-break:break-word}
+#triton-desktop .qc-msg.mine{align-self:flex-end;background:#1f9d55;color:#fff}
+#triton-desktop .qc-msg .qc-note{display:block;font-size:11px;opacity:.8}
+#triton-desktop .qc-msg .qc-file-link{color:#8ab4ff;font-weight:600;text-decoration:none;display:inline-block}
+#triton-desktop .qc-msg.mine .qc-file-link{color:#fff}
+#triton-desktop .qc-empty{color:var(--text-2);font-size:12px;text-align:center;margin:auto}
+#triton-desktop .qc-send{display:flex;gap:6px;padding:9px 12px;border-top:1px solid var(--border-soft)}
+#triton-desktop .qc-send input{flex:1;min-width:0;border:1px solid var(--border-soft);border-radius:8px;padding:8px 10px;background:var(--surface-2);color:var(--text);outline:none}
+
+/* System control app */
+#triton-desktop .sc-head{font-weight:600;font-size:12.5px;margin-bottom:8px}
+#triton-desktop .sc-head #sc-sel{font-weight:400;font-size:11px;color:var(--text-2);margin-left:8px}
+#triton-desktop .sc-elem{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--border-soft);border-radius:9px;margin-bottom:6px;background:var(--surface-2);font-size:12px}
+#triton-desktop button.sc-elem{width:100%;text-align:left;cursor:pointer;color:var(--text);transition:background .12s,border-color .12s}
+#triton-desktop button.sc-elem:hover{background:var(--surface-3)}
+#triton-desktop button.sc-elem.sel{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+#triton-desktop .sc-empty{padding:18px 6px;text-align:center;color:var(--text-2);font-size:11.5px}
+#triton-desktop .sc-tip{margin-top:9px;font-size:10.5px;line-height:1.6;color:var(--text-2)}
+#triton-desktop .sc-name{font-family:ui-monospace,Consolas,monospace;font-weight:500}
+#triton-desktop .sc-tag{font-size:10.5px;background:var(--surface-3);color:var(--text-2);padding:2px 7px;border-radius:999px}
+#triton-desktop .sc-pos{margin-left:auto;font-size:11px;color:var(--text-2);white-space:nowrap}
+#triton-desktop .sc-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+
+/* Settings app */
+#triton-desktop .set-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 2px;border-bottom:1px solid var(--border-soft);font-size:12.5px}
+#triton-desktop .set-row:last-child{border-bottom:none}
+#triton-desktop .set-opts{display:flex;gap:6px}
+#triton-desktop .set-opts label{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2);border-radius:999px;padding:4px 10px;font-size:11.5px;cursor:pointer}
+#triton-desktop .set-opts input{accent-color:var(--accent)}
+#triton-desktop .set-opts label:has(input:checked){background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+#triton-desktop .set-row input[type="range"]{flex:1;min-width:60px;accent-color:var(--accent)}
+#triton-desktop .sw{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12.5px}
+#triton-desktop .sw input{accent-color:var(--green)}
+#triton-desktop .set-block{margin-bottom:10px}
+#triton-desktop .set-block-title{font-size:12px;font-weight:600;margin:2px 0 4px}
+#triton-desktop .set-field{display:flex;flex-direction:column;gap:5px;padding:7px 2px}
+#triton-desktop .set-field label{font-size:11.5px;color:var(--text-2)}
+#triton-desktop .set-field input{width:100%;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:6px 9px;font-size:12.5px;outline:none;transition:border-color .15s,box-shadow .15s}
+#triton-desktop .set-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#triton-desktop .set-actions{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+#triton-desktop .set-status{font-size:11.5px;color:var(--text-2);margin-top:8px}
+
+/* ===== Python 运行时窗口 ===== */
+#triton-desktop .ic-py{background:linear-gradient(135deg,#ffd43b,#3776ab)}
+#triton-desktop .win.py-win{width:min(780px,calc(100% - 24px));height:min(560px,calc(100% - 116px))}
+#triton-desktop .win.py-win .win-body{overflow:hidden;padding:0}
+#triton-desktop .py-root{display:flex;height:100%;min-height:0}
+
+#triton-desktop .py-side{width:clamp(148px,28%,214px);min-width:128px;display:flex;flex-direction:column;min-height:0;background:var(--surface-2);border-right:1px solid var(--border-soft)}
+#triton-desktop .py-tabs{display:flex;gap:4px;padding:7px 7px 0}
+#triton-desktop .py-tab{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:5px 6px;font-size:11.5px;color:var(--text-2);background:transparent;border:1px solid transparent;border-radius:8px;cursor:pointer;transition:background .12s,color .12s}
+#triton-desktop .py-tab svg{width:13px;height:13px}
+#triton-desktop .py-tab:hover{color:var(--text);background:var(--surface-3)}
+#triton-desktop .py-tab.active{background:var(--surface);color:var(--accent);border-color:var(--border)}
+#triton-desktop .py-pane{flex:1;min-height:0;display:flex;flex-direction:column;padding:7px}
+#triton-desktop .py-dir{font-size:10.5px;color:var(--text-2);padding:2px 6px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .py-tree{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:1px}
+#triton-desktop .py-node{display:flex;align-items:center;gap:5px;width:100%;border:none;background:transparent;color:var(--text);font:12px/1.4 inherit;text-align:left;padding:4px 6px;border-radius:7px;cursor:default}
+#triton-desktop .py-node svg{width:13px;height:13px;flex:none;color:var(--text-2)}
+#triton-desktop .py-node.dir{color:var(--text-2);font-size:11.5px}
+#triton-desktop .py-node.file{cursor:pointer;transition:background .12s}
+#triton-desktop .py-node.file:hover{background:var(--surface-3)}
+#triton-desktop .py-node.file.sel{background:var(--accent-soft);color:var(--accent)}
+#triton-desktop .py-node.file.sel svg{color:var(--accent)}
+#triton-desktop .py-node.file.muted .nm,#triton-desktop .py-node.file.muted svg{color:var(--text-2);opacity:.75}
+#triton-desktop .py-node .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#triton-desktop .py-node .sz{flex:none;font-size:10px;color:var(--text-2)}
+#triton-desktop .py-new{display:flex;gap:5px;padding-top:7px}
+#triton-desktop .py-new input{flex:1;min-width:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;padding:5px 8px;font-size:11.5px;outline:none}
+#triton-desktop .py-new input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#triton-desktop .py-new .mini-btn{padding:4px 9px;font-size:11.5px}
+#triton-desktop .py-empty{padding:18px 8px;text-align:center;color:var(--text-2);font-size:11.5px;line-height:1.7}
+
+#triton-desktop .py-env{display:flex;flex-direction:column;gap:3px;padding:2px 2px 8px}
+#triton-desktop .py-env-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--text-2);padding:3px 5px;border-radius:6px}
+#triton-desktop .py-env-row b{color:var(--text);font-weight:600;text-align:right}
+#triton-desktop .py-env-path{font:10.5px/1.5 ui-monospace,Consolas,monospace;color:var(--text-2);padding:4px 5px;word-break:break-all;background:var(--surface);border:1px solid var(--border-soft);border-radius:7px;margin-top:3px}
+#triton-desktop .py-libs-head{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11px;color:var(--text-2);padding:2px 4px 6px;border-top:1px solid var(--border-soft);margin-top:4px}
+#triton-desktop .py-libs-head b{color:var(--text)}
+#triton-desktop .py-libs-head input{width:76px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:3px 6px;font-size:11px;outline:none}
+#triton-desktop .py-libs-head input:focus{border-color:var(--accent)}
+#triton-desktop .py-libs{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:1px}
+#triton-desktop .py-lib{display:flex;align-items:baseline;justify-content:space-between;gap:6px;padding:3px 6px;border-radius:6px;font-size:11.5px}
+#triton-desktop .py-lib:hover{background:var(--surface-3)}
+#triton-desktop .py-lib .nm{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#triton-desktop .py-lib .ver{color:var(--text-2);font:10.5px ui-monospace,Consolas,monospace;flex:none}
+
+#triton-desktop .py-main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0;padding:8px;gap:6px}
+#triton-desktop .py-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#triton-desktop .py-toolbar .mini-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;font-size:11.5px}
+#triton-desktop .py-toolbar .mini-btn svg{width:12px;height:12px}
+#triton-desktop .py-toolbar .mini-btn:disabled{opacity:.45;cursor:not-allowed}
+#triton-desktop .py-file{flex:1;min-width:60px;font:11.5px/1.4 ui-monospace,Consolas,monospace;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;padding-right:4px}
+#triton-desktop .py-state{flex:none;font-size:10.5px;padding:3px 9px;border-radius:999px;background:var(--surface-3);color:var(--text-2);white-space:nowrap}
+#triton-desktop .py-state.ok{background:var(--green-soft);color:var(--green)}
+#triton-desktop .py-state.err{background:light-dark(rgba(229,72,77,.12),rgba(255,99,105,.18));color:var(--red)}
+#triton-desktop .py-state.warn{background:light-dark(rgba(201,138,19,.14),rgba(232,178,60,.18));color:var(--amber)}
+#triton-desktop .py-state.run{background:var(--accent-soft);color:var(--accent)}
+
+#triton-desktop .py-editor{flex:1;min-height:88px;display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface-2)}
+#triton-desktop .py-gutter{margin:0;flex:none;padding:9px 7px;min-width:26px;font:12px/1.55 ui-monospace,"Cascadia Code",Consolas,monospace;text-align:right;color:var(--text-2);background:light-dark(rgba(21,30,48,.03),rgba(255,255,255,.03));border-right:1px solid var(--border-soft);overflow:hidden;white-space:pre;user-select:none}
+#triton-desktop .py-editor textarea{flex:1;min-width:0;resize:none;border:none;background:transparent;color:var(--text);padding:9px 10px;font:12px/1.55 ui-monospace,"Cascadia Code",Consolas,monospace;outline:none;white-space:pre;overflow:auto;tab-size:4}
+
+#triton-desktop .py-console-head{display:flex;align-items:center;gap:6px}
+#triton-desktop .py-console-title{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text-2);flex:none}
+#triton-desktop .py-console-title svg{width:12px;height:12px}
+#triton-desktop .py-console-head input{flex:1;min-width:40px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:4px 8px;font:11.5px ui-monospace,Consolas,monospace;outline:none}
+#triton-desktop .py-console-head input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#triton-desktop .py-console-head .mini-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;font-size:11px}
+#triton-desktop .py-console-head .mini-btn svg{width:12px;height:12px}
+#triton-desktop .py-console-head .mini-btn.active{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+#triton-desktop .py-stdin{flex:none;height:52px;resize:vertical;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);padding:6px 8px;font:11.5px/1.5 ui-monospace,Consolas,monospace;outline:none}
+#triton-desktop .py-console{flex:none;height:38%;min-height:92px;max-height:46%;margin:0;overflow:auto;background:light-dark(#f7f8fc,#1c2333);border:1px solid var(--border-soft);border-radius:10px;padding:7px 9px;font:11.5px/1.6 ui-monospace,"Cascadia Code",Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+#triton-desktop .py-line{color:var(--text)}
+#triton-desktop .py-seg{color:var(--text)}
+#triton-desktop .py-seg.out{color:var(--text)}
+#triton-desktop .py-seg.cmd{color:var(--text-2)}
+#triton-desktop .py-seg.sys{color:var(--text-2)}
+#triton-desktop .py-seg.err{color:var(--red)}
+#triton-desktop .py-seg.warn{color:var(--amber)}
+#triton-desktop .py-seg.ok{color:var(--green)}
+
+/* ===== Python 终端窗口 ===== */
+#triton-desktop .ic-term{background:linear-gradient(135deg,#5b6673,#1f2937)}
+#triton-desktop .win.pt-win{width:min(720px,calc(100% - 24px));height:min(500px,calc(100% - 116px))}
+#triton-desktop .win.pt-win .win-body{overflow:hidden;padding:0}
+#triton-desktop .pt-root{display:flex;flex-direction:column;height:100%;min-height:0;background:light-dark(#fbfcfe,#121926)}
+#triton-desktop .py-toolbar .mini-btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+
+#triton-desktop .pt-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 9px;background:var(--surface-2);border-bottom:1px solid var(--border-soft)}
+#triton-desktop .pt-toolbar select,#triton-desktop .pt-toolbar input{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;padding:4px 7px;font-size:11.5px;outline:none;max-width:150px}
+#triton-desktop .pt-toolbar select:focus,#triton-desktop .pt-toolbar input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#triton-desktop .pt-toolbar select:disabled{opacity:.5}
+#triton-desktop .pt-toolbar input{width:74px;flex:none}
+#triton-desktop .pt-toolbar .mini-btn{padding:4px 10px;font-size:11.5px}
+#triton-desktop .pt-toolbar .mini-btn:disabled{opacity:.45;cursor:not-allowed}
+#triton-desktop .pt-dot{width:8px;height:8px;border-radius:50%;background:var(--text-2);flex:none;transition:background .15s}
+#triton-desktop .pt-dot.on{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+#triton-desktop .pt-label{flex:1;min-width:70px;font-size:11.5px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+#triton-desktop .pt-screen{flex:1;min-height:0;overflow:auto;padding:9px 11px;cursor:text;font:12px/1.65 ui-monospace,"Cascadia Code",Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+#triton-desktop .pt-line{margin:0}
+#triton-desktop .pt-seg{color:var(--text)}
+#triton-desktop .pt-seg.in{color:var(--accent)}
+#triton-desktop .pt-seg.err{color:var(--red)}
+#triton-desktop .pt-seg.sys{color:var(--text-2)}
+#triton-desktop .pt-seg.exit{color:var(--amber)}
+
+#triton-desktop .pt-input{display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--surface-2);border-top:1px solid var(--border-soft)}
+#triton-desktop .pt-prompt{flex:none;font:12px ui-monospace,Consolas,monospace;color:var(--accent)}
+#triton-desktop .pt-input input{flex:1;min-width:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;padding:5px 9px;font:12px ui-monospace,"Cascadia Code",Consolas,monospace;outline:none}
+#triton-desktop .pt-input input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#triton-desktop .pt-input input:disabled{opacity:.6}
+#triton-desktop .pt-input .mini-btn{padding:5px 11px;font-size:11.5px}
+#triton-desktop .pt-input .mini-btn:disabled{opacity:.45;cursor:not-allowed}
+#triton-desktop .pt-foot{padding:4px 10px 7px;font-size:10.5px;line-height:1.5;color:var(--text-2);background:var(--surface-2)}
+
+/* Toast */
+#triton-desktop .toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%) translateY(8px);background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:9px 14px;font-size:12.5px;box-shadow:var(--shadow-soft);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:50;white-space:nowrap;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
+#triton-desktop .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== 动态适配：随窗口大小缩放 ===== */
+#triton-desktop .sidebar{left:clamp(8px,1vw,14px);top:clamp(8px,1.4vh,14px);bottom:clamp(14px,2vh,24px);width:clamp(228px,21vw,300px)}
+#triton-desktop .chat{top:clamp(48px,7.4vh,68px);bottom:clamp(14px,2vh,22px);left:calc(50% - var(--dock-reserve)/2);width:min(860px,calc(100% - 32px - var(--dock-reserve)))}
+#triton-desktop .dock{right:clamp(6px,.9vw,12px);top:50%;bottom:auto;gap:clamp(3px,.5vh,7px);padding:clamp(6px,.9vh,10px) clamp(5px,.7vh,8px);max-height:calc(100% - 16px)}
+#triton-desktop .dock-item{width:clamp(32px,3.1vw,46px);height:clamp(32px,3.1vw,46px)}
+#triton-desktop .d-ic{width:clamp(23px,2.2vw,33px);height:clamp(23px,2.2vw,33px)}
+#triton-desktop .d-ic svg{width:clamp(14px,1.3vw,19px);height:clamp(14px,1.3vw,19px)}
+#triton-desktop .lp-grid{grid-template-columns:repeat(auto-fit,minmax(76px,1fr));gap:clamp(14px,2.4vh,24px) clamp(18px,3vw,38px);width:min(680px,84vw);justify-items:center}
+#triton-desktop .win{width:min(420px,calc(100% - 24px));height:min(clamp(280px,34vh,380px),calc(100% - 116px))}
+#triton-desktop .toast{bottom:clamp(16px,2.4vh,26px)}
+
+@media (max-width:560px){
+  #triton-desktop .chat{width:calc(100% - 20px - var(--dock-reserve));left:calc(50% - var(--dock-reserve)/2);top:48px;bottom:14px}
+  #triton-desktop .agent-panel{position:absolute;right:8px;top:46px;bottom:66px;width:188px;z-index:6;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-soft)}
+  #triton-desktop .msgs{padding:12px 14px}
+  #triton-desktop .msg{max-width:96%}
+  #triton-desktop .sb-time{display:none}
+  #triton-desktop .sidebar{width:240px}
+}
+@media (max-width:420px){
+  #triton-desktop .agent-label{display:none}
+  #triton-desktop .pill{gap:6px;padding-left:8px}
+  #triton-desktop .dock{gap:4px;padding:7px 5px}
+  #triton-desktop .dock-item{width:34px;height:34px;border-radius:9px}
+  #triton-desktop .d-ic{width:24px;height:24px;border-radius:7px}
+  #triton-desktop .sep{margin:1px 3px}
+  #triton-desktop .lp-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}
+  #triton-desktop .lp-ic{width:54px;height:54px}
+  #triton-desktop .status{font-size:11px;gap:7px;padding:5px 10px}
+}
+@media (max-width:360px){
+  #triton-desktop .dock-item{width:30px;height:30px}
+  #triton-desktop .d-ic{width:22px;height:22px}
+}
+@media (prefers-reduced-motion:reduce){
+  #triton-desktop *,#triton-desktop *::before,#triton-desktop *::after{animation:none!important;transition:none!important}
+}
+
+/* ===== 页面外壳（FastAPI 版） ===== */
+:root { color-scheme: light dark; }
+html, body { margin: 0; padding: 0; min-height: 100%; }
+body {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 0;
+  box-sizing: border-box;
+  background: light-dark(#eaf6ef, #04170f);   /* 页面外壳底色：与深绿渐变壁纸呼应 */
+}
+#triton-desktop {
+  height: 100dvh;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: auto;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ===== 工具提示（独立页面用） ===== */
+#triton-tip {
+  position: fixed;
+  z-index: 1000;
+  max-width: 260px;
+  background: light-dark(rgba(24,29,45,.94), rgba(10,13,22,.96));
+  color: #fff;
+  font-size: 11.5px;
+  line-height: 1.4;
+  padding: 5px 10px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .15s, transform .15s;
+  box-shadow: 0 8px 20px rgba(0,0,0,.32);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#triton-tip.show { opacity: 1; transform: translateY(0); }
+
+
+/* ==== fix 2026-10-12: 网页应用窗口(iframe)高度撑满 ====
+   原因：.app-host 原来没有确定高度（.win-body 不是 flex 容器，flex:1 对它是空操作），
+   于是 iframe 的 height:100% 退化成浏览器内定默认值 150px；窗口高 580px，
+   下面 400 多像素就是空的，同时应用自身 html,body{overflow:hidden} 把多余内容裁掉，
+   表现为「只显示一半」。作用域限定在网页应用窗口，不影响其它窗口。*/
+#triton-desktop .win.app-win .win-body{display:flex;flex-direction:column;padding:0;overflow:hidden}
+#triton-desktop .win.app-win .app-host{flex:1 1 auto;min-height:0;display:flex;background:var(--surface)}
+#triton-desktop .win.app-win .app-frame{flex:1 1 auto;width:100%;height:100%;min-height:0;border:0;display:block}
